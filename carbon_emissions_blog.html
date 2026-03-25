@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ride-Pooling & Carbon: Who Actually Cuts Emissions? | Research Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300;1,700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --carbon: #1c1c1e;
+    --green: #1a7a4a;
+    --green-light: #2ecc71;
+    --red: #c0392b;
+    --amber: #d68910;
+    --text: #1c2a24;
+    --muted: #5d7169;
+    --neutral: #8a9a8e;
+    --mist: #f4f7f6;
+    --border: #e2e8e4;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .progress {
+    position: fixed; top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--green-light));
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--carbon);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .particle-bg {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    width: 100%; height: 100%;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); opacity: 0.15; }
+    50%       { transform: translateY(-25px); opacity: 0.35; }
+  }
+
+  .hero-nav {
+    position: relative; z-index: 2;
+    padding: 1.75rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .nav-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .nav-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    border: 1px solid rgba(46,204,113,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .hero-body {
+    position: relative; z-index: 2;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 4rem 3rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  h1 .green { color: var(--green-light); }
+  h1 .red   { color: #f07070; }
+
+  .hero-deck {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+    max-width: 44ch;
+  }
+
+  .hero-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.08em;
+    line-height: 2;
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .emission-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.22);
+    margin-bottom: 0.25rem;
+  }
+
+  .scorecard {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 0.3s ease;
+  }
+
+  .scorecard:hover {
+    background: rgba(255,255,255,0.07);
+    transform: translateX(4px);
+  }
+
+  .score-class {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .score-class.down { background: rgba(46,204,113,0.18); color: var(--green-light); border: 1px solid rgba(46,204,113,0.3); }
+  .score-class.up   { background: rgba(231,76,60,0.18);  color: #f07070; border: 1px solid rgba(231,76,60,0.3); }
+
+  .score-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #fff;
+    flex: 1;
+  }
+
+  .score-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .score-num.down { color: var(--green-light); }
+  .score-num.up   { color: #f07070; }
+
+  .hero-scroll {
+    position: relative; z-index: 2;
+    padding: 1.5rem 3rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .scroll-anim {
+    width: 24px; height: 1px;
+    background: rgba(255,255,255,0.15);
+    animation: scrollw 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollw { 0%,100%{width:24px}50%{width:50px} }
+
+  /* ── MAIN ── */
+  main { max-width: 780px; margin: 0 auto; padding: 5rem 2rem; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .section { margin-bottom: 5rem; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 20px; height: 2px;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--carbon);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  p { color: #2a3a30; margin-bottom: 1.25rem; font-size: 1.02rem; }
+
+  .pull-quote {
+    margin: 2.5rem 0;
+    padding: 1.25rem 1.75rem 1.25rem 2rem;
+    border-left: 3px solid var(--green);
+    background: var(--mist);
+  }
+
+  .pull-quote p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--carbon);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── CLASS CARDS ── */
+  .classes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .class-card {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .class-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .class-card.green-card::after  { background: var(--green); }
+  .class-card.red-card::after    { background: var(--red); }
+
+  .class-card:hover::after, .class-card.active::after { transform: scaleX(1); }
+  .class-card:hover, .class-card.active {
+    border-color: var(--text);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .class-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .class-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--carbon);
+    display: block;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .class-share {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .class-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .tag-down  { background: rgba(26,122,74,0.1); color: var(--green); }
+  .tag-up    { background: rgba(192,57,43,0.1); color: var(--red); }
+
+  .class-detail {
+    display: none;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .class-detail.visible { display: block; }
+  .class-card.full { grid-column: 1 / -1; }
+
+  /* ── CALCULATOR ── */
+  .calc-block {
+    background: var(--carbon);
+    border-radius: 6px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+    color: #e8f0eb;
+  }
+
+  .calc-block h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 0.35rem;
+  }
+
+  .calc-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.28);
+    letter-spacing: 0.06em;
+    margin-bottom: 1.75rem;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .calc-field label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.32);
+    margin-bottom: 0.45rem;
+  }
+
+  .calc-field select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e8f0eb;
+    padding: 0.55rem 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    border-radius: 3px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .calc-result {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .result-big {
+    font-family: 'Fraunces', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.4s ease;
+  }
+
+  .result-big.down { color: var(--green-light); }
+  .result-big.up   { color: #f07070; }
+
+  .result-info { flex: 1; }
+
+  .result-verdict {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    transition: color 0.4s ease;
+  }
+
+  .result-verdict.down { color: var(--green-light); }
+  .result-verdict.up   { color: #f07070; }
+
+  .result-desc {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── SPECTRUM ── */
+  .spectrum-wrap {
+    margin: 2.5rem 0;
+    background: var(--mist);
+    border-radius: 4px;
+    padding: 1.75rem;
+  }
+
+  .spectrum-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .spectrum-row {
+    display: grid;
+    grid-template-columns: 145px 1fr 70px;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.9rem;
+  }
+
+  .sp-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text);
+  }
+
+  .sp-bar-wrap {
+    height: 12px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .sp-bar {
+    height: 100%;
+    border-radius: 6px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .sp-bar.animated { transform: scaleX(1); }
+
+  .sp-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    text-align: right;
+    font-weight: 700;
+  }
+
+  /* ── ACCORDION ── */
+  .accordion { margin: 1.5rem 0; }
+  .acc-item { border-top: 1px solid var(--border); }
+
+  .acc-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text);
+    text-align: left;
+    gap: 1rem;
+  }
+
+  .acc-trigger:hover { color: var(--green); }
+
+  .acc-icon {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--neutral);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .acc-item.open .acc-icon { transform: rotate(45deg); color: var(--green); }
+  .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+
+  .acc-body-inner {
+    padding: 0 0 1.25rem;
+    font-size: 0.92rem;
+    color: #4a5e50;
+    line-height: 1.7;
+  }
+
+  /* ── FINDINGS ── */
+  .finding {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .finding:last-child { border-bottom: none; }
+
+  .finding-n {
+    font-family: 'Fraunces', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--border);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2.75rem;
+    text-align: right;
+  }
+
+  .finding-body strong {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.97rem;
+    color: var(--carbon);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .finding-body p { font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.65; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 4rem 0;
+  }
+
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .divider span { font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.2em; color:var(--neutral); }
+
+  /* ── CTA ── */
+  .cta-block {
+    background: var(--carbon);
+    color: #fff;
+    padding: 3rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-block::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(46,204,113,0.07) 0%, transparent 70%);
+  }
+
+  .cta-block h2 { color: #fff; position: relative; z-index: 1; margin-bottom: 0.75rem; }
+  .cta-block p  { color: rgba(255,255,255,0.5); max-width: 50ch; margin: 0 auto 2rem; position: relative; z-index: 1; font-size: 0.95rem; }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    padding: 0.9rem 2.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    position: relative; z-index: 1;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .cta-btn:hover { background: #1a7a4a; transform: translateY(-2px); }
+  .cta-meta { margin-top: 1.25rem; font-family: 'Space Mono', monospace; font-size: 0.58rem; color: rgba(255,255,255,0.18); letter-spacing: 0.1em; position: relative; z-index:1; }
+
+  @media (max-width: 760px) {
+    .hero-body { grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 1.5rem 2rem; }
+    .hero-nav { padding: 1.25rem 1.5rem; }
+    main { padding: 3rem 1.25rem; }
+    .classes-grid { grid-template-columns: 1fr; }
+    .calc-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progressBar"></div>
+
+<section class="hero">
+  <svg class="particle-bg" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12%" cy="30%" r="3" fill="#2ecc71" style="animation:float 8s ease-in-out infinite;animation-delay:0s"/>
+    <circle cx="25%" cy="70%" r="2" fill="#2ecc71" style="animation:float 9s ease-in-out infinite;animation-delay:1.2s"/>
+    <circle cx="45%" cy="22%" r="4" fill="rgba(255,255,255,0.06)" style="animation:float 11s ease-in-out infinite;animation-delay:2.5s"/>
+    <circle cx="65%" cy="60%" r="2" fill="#e74c3c" style="animation:float 7s ease-in-out infinite;animation-delay:0.8s"/>
+    <circle cx="80%" cy="28%" r="3" fill="rgba(255,255,255,0.05)" style="animation:float 10s ease-in-out infinite;animation-delay:3.1s"/>
+    <circle cx="88%" cy="72%" r="2" fill="#2ecc71" style="animation:float 8s ease-in-out infinite;animation-delay:1.7s"/>
+    <text x="8%" y="42%" font-family="monospace" font-size="11" fill="rgba(46,204,113,0.1)" style="animation:float 10s ease-in-out infinite;animation-delay:0.5s">CO₂</text>
+    <text x="55%" y="65%" font-family="monospace" font-size="9"  fill="rgba(231,76,60,0.08)" style="animation:float 12s ease-in-out infinite;animation-delay:2s">CO₂</text>
+    <text x="73%" y="32%" font-family="monospace" font-size="10" fill="rgba(46,204,113,0.07)" style="animation:float 9s ease-in-out infinite;animation-delay:3.5s">CO₂</text>
+  </svg>
+
+  <nav class="hero-nav">
+    <span class="nav-tag">Zhi, Tirachini, Abouelela, Song &amp; Antoniou · Preprint 2025</span>
+    <span class="nav-badge">Carbon Research</span>
+  </nav>
+
+  <div class="hero-body">
+    <div class="hero-left">
+      <span class="hero-kicker">Research Explainer · Emissions &amp; Shared Mobility</span>
+      <h1>Ride-pooling can <span class="green">cut</span> carbon — or <span class="red">raise</span> it. It depends entirely on who is riding.</h1>
+      <p class="hero-deck">
+        A new study segments Mexico City pooled-ride users into five distinct classes and calculates the actual CO₂ impact of each. The results are more complicated — and more actionable — than the headline claim that shared rides are green.
+      </p>
+      <div class="hero-meta">
+        Beijing Jiaotong University · TU Munich · U. Chile · Chang'an University<br>
+        1,118 users · ~100,000 trip records · Mexico City<br>
+        Latent Class Cluster Analysis + fuel-based emission modelling
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="emission-label">CO₂ impact per user across all trips (0% deadheading)</div>
+      <div class="scorecard">
+        <div class="score-class down">1</div>
+        <div class="score-name">Van-Preferred Travelers</div>
+        <div class="score-num down">−37.9 kg</div>
+      </div>
+      <div class="scorecard">
+        <div class="score-class up">2</div>
+        <div class="score-name">Travel Time-Conscious</div>
+        <div class="score-num up">+15.5 kg</div>
+      </div>
+      <div class="scorecard">
+        <div class="score-class up">3</div>
+        <div class="score-name">Low-freq High-morning</div>
+        <div class="score-num up">+7.1 kg</div>
+      </div>
+      <div class="scorecard">
+        <div class="score-class up">4</div>
+        <div class="score-name">Frequent Ride-pooling</div>
+        <div class="score-num up">+45.5 kg</div>
+      </div>
+      <div class="scorecard">
+        <div class="score-class down">5</div>
+        <div class="score-name">Formerly Private Travelers</div>
+        <div class="score-num down">−63.1 kg</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-anim"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<main>
+
+  <section class="section reveal">
+    <div class="section-label">The Problem</div>
+    <h2>Is ride-pooling actually green? The answer is: it depends entirely on who you ask.</h2>
+    <p>
+      The environmental case for pooled rides sounds airtight: instead of five people driving five cars, put them in one van. Vehicle kilometres drop. Emissions drop. Problem solved.
+    </p>
+    <p>
+      The problem is that not everyone switching to a pooled service was previously driving a car. A substantial share of pooled-ride users in cities like Mexico City were previously taking the metro — one of the most emissions-efficient modes of transport that exists. When those riders switch to a shared van, they move from a lower-emission mode to a higher-emission one. The van is more efficient than five cars, but it is far less efficient than a full subway train.
+    </p>
+    <p>
+      Most previous research on ride-pooling's carbon impact either analyses operational data comparing pooling versus solo ride-hailing, or runs hypothetical mode-shift simulations. None had combined individual user-level data with actual trip records to segment users and calculate segment-specific emissions. This paper does exactly that.
+    </p>
+
+    <div class="pull-quote">
+      <p>The transport modes from which users switch to ride-pooling, and the differences in CO₂ reduction capacity across users, are crucial to exploring the environmental benefits of ride-pooling.</p>
+    </div>
+
+    <p>
+      Using data from Jetty in Mexico City — over 100,000 trips and a detailed survey of 1,118 riders — the researchers applied Latent Class Cluster Analysis to identify five distinct user profiles, then calculated each profile's net emissions impact.
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">The Five Classes</div>
+    <h2>Not all pooled-ride users are the same — and the differences define the carbon outcome</h2>
+    <p>Click any class to see who they are and what drives their emissions result.</p>
+
+    <div class="classes-grid">
+      <div class="class-card green-card" onclick="toggleClass('c1', this)">
+        <div class="class-num">Class 1 · 34% of users</div>
+        <span class="class-name">Van-Preferred Travelers</span>
+        <div class="class-share">87% use Jetty vans · short trips (&lt;21.7 km)</div>
+        <span class="class-tag tag-down">↓ Reduces CO₂</span>
+        <div class="class-detail" id="c1">
+          The largest class and one of the two that actually reduces emissions. Young, highly educated full-time workers who prefer Jetty vans, walk or bike to stops, and make shorter trips. They replace a balanced mix of car trips and public transit, so the van genuinely displaces some private car use. Their van preference gives them the lowest per-trip emissions of any Jetty mode. Average CO₂ reduction: −37.9 kg/user across all trips at 0% empty km.
+        </div>
+      </div>
+
+      <div class="class-card red-card" onclick="toggleClass('c2', this)">
+        <div class="class-num">Class 2 · 19% of users</div>
+        <span class="class-name">Travel Time-Conscious Travelers</span>
+        <div class="class-share">100% use Jetty bus · value time savings · 71% male</div>
+        <span class="class-tag tag-up">↑ Increases CO₂</span>
+        <div class="class-detail" id="c2">
+          Every user in this class rides Jetty buses, and 82% cite travel time savings as their primary reason. The problem is what they are switching from: mostly combinations of paratransit and formal public transit. Their alternative modes had lower emissions per passenger-kilometre than Jetty buses. Male-dominated, working-age, with rigid schedules — they value time, not the environment. Average CO₂ increase: +15.5 kg/user.
+        </div>
+      </div>
+
+      <div class="class-card red-card" onclick="toggleClass('c3', this)">
+        <div class="class-num">Class 3 · 17% of users</div>
+        <span class="class-name">Low-freq High-morning-trip Travelers</span>
+        <div class="class-share">88% make 92%+ of trips in the morning peak · least frequent riders</div>
+        <span class="class-tag tag-up">↑ Increases CO₂</span>
+        <div class="class-detail" id="c3">
+          The least frequent riders — 62% use Jetty less than once a month. Almost exclusively morning commuters: 88% make over 92% of their Jetty trips before noon. They replace public transit combinations (paratransit and metro) with buses, resulting in a modest emission increase. Balanced gender split, lower full-time employment than other classes. Their infrequency limits total impact, but the direction is still upward. Average CO₂ increase: +7.1 kg/user.
+        </div>
+      </div>
+
+      <div class="class-card red-card" onclick="toggleClass('c4', this)">
+        <div class="class-num">Class 4 · 17% of users</div>
+        <span class="class-name">Frequent Ride-pooling Travelers</span>
+        <div class="class-share">81% women · security-driven · frequent transit replacers</div>
+        <span class="class-tag tag-up">↑↑ Highest CO₂ increase per user</span>
+        <div class="class-detail" id="c4">
+          The most troubling class environmentally — and the one with the clearest social explanation. This class is 81% women, predominantly without cars or driving licences, and its defining characteristic is that members use Jetty specifically because public transit in Mexico City is unsafe. They replaced public transit and paratransit (53% replaced metro + paratransit combinations). Their shift from low-emission modes to Jetty buses drives the largest per-user emission increase: +45.5 kg/user. The researchers explicitly note this is a direct consequence of Mexico City transit insecurity — these users are not choosing Jetty for comfort, but to escape harassment.
+        </div>
+      </div>
+
+      <div class="class-card green-card full" onclick="toggleClass('c5', this)">
+        <div class="class-num">Class 5 · 12% of users</div>
+        <span class="class-name">Formerly Private Travelers</span>
+        <div class="class-share">41% replaced private cars · 68% own 2+ cars · highest income · 100% have driving licences</div>
+        <span class="class-tag tag-down">↓↓ Largest per-user CO₂ reduction</span>
+        <div class="class-detail" id="c5">
+          The carbon star of the study — despite being just 12% of users. This high-income, car-owning segment was predominantly driving private vehicles before joining Jetty. Their switch generates the largest per-user emission reduction: −63.1 kg/user at 0% empty km. They ride frequently, and combining high trip frequency with a large emission differential per trip amplifies the impact enormously. The policy implication is clear: every car-to-Jetty conversion in this class is a significant climate win.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Why Vehicle Choice Matters</div>
+    <h2>The emission factor spectrum explains the paradox</h2>
+    <p>
+      One of the paper's key contributions is a careful calculation of CO₂ emission factors for every relevant mode in grams per passenger-kilometre. The range is enormous — from the Mexico City Metro at under 1 g/p·km to a solo taxi at nearly 384 g/p·km. Where a Jetty vehicle sits on this spectrum determines whether it increases or decreases emissions for any given user.
+    </p>
+
+    <div class="spectrum-wrap" id="spectrumChart">
+      <div class="spectrum-title">CO₂ Emission Factors by Mode (g per passenger-km) — Source: Zhi et al. 2025, Tables A.3–A.4</div>
+
+      <div class="spectrum-row">
+        <div class="sp-label">Metro (subway)</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:0.25%; background:var(--green);"></div></div>
+        <div class="sp-val" style="color:var(--green)">0.94</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Suburban Train</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:0.25%; background:var(--green);"></div></div>
+        <div class="sp-val" style="color:var(--green)">0.97</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Metrobus (BRT)</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:3%; background:var(--green);"></div></div>
+        <div class="sp-val" style="color:var(--green)">11.4</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Jetty Van ★</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:9.3%; background:var(--amber);"></div></div>
+        <div class="sp-val" style="color:var(--amber)">35.8</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Combi / Microbus</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:9%; background:var(--amber);"></div></div>
+        <div class="sp-val" style="color:var(--amber)">34–35</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Jetty Caddy ★</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:17.6%; background:var(--amber);"></div></div>
+        <div class="sp-val" style="color:var(--amber)">67.5</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Jetty Bus ★</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:24.9%; background:var(--red);"></div></div>
+        <div class="sp-val" style="color:var(--red)">95.7</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Jetty Taxi ★</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:29.9%; background:var(--red);"></div></div>
+        <div class="sp-val" style="color:var(--red)">114.7</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Car driver/passenger</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:49.8%; background:var(--red);"></div></div>
+        <div class="sp-val" style="color:var(--red)">191</div>
+      </div>
+      <div class="spectrum-row">
+        <div class="sp-label">Taxi / Uber</div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:100%; background:var(--red);"></div></div>
+        <div class="sp-val" style="color:var(--red)">384</div>
+      </div>
+      <p style="margin-top:1rem; font-family:'Space Mono',monospace; font-size:0.58rem; color:var(--neutral); letter-spacing:0.06em;">★ = Jetty modes. The Jetty bus (95.7 g/p·km) is better than a private car (191) but roughly 100× worse than the metro (0.94). That gap explains everything.</p>
+    </div>
+
+    <p>
+      This spectrum explains the paradox at the heart of the paper. The same Jetty bus reduces emissions when it replaces a private car, and increases them when it replaces a metro trip. The user's previous mode is everything.
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Interactive Tool</div>
+    <h2>Model the CO₂ impact yourself</h2>
+    <p>Emission outcomes depend on user class, vehicle type, and the rate of empty kilometres — the distance vehicles travel without passengers between routes. Adjust below to explore the range mirroring Table 6 in the paper.</p>
+
+    <div class="calc-block">
+      <h3>CO₂ Impact Calculator</h3>
+      <p class="calc-sub">FROM TABLE 6 · ZHI ET AL. 2025 · UNIT: ×10³ G CO₂ PER USER ACROSS ALL TRIPS</p>
+
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>User class</label>
+          <select id="cClass" onchange="updateCalc()">
+            <option value="1">Class 1 — Van-Preferred Travelers</option>
+            <option value="2">Class 2 — Travel Time-Conscious</option>
+            <option value="3">Class 3 — Low-freq High-morning</option>
+            <option value="4">Class 4 — Frequent Ride-pooling</option>
+            <option value="5">Class 5 — Formerly Private Travelers</option>
+          </select>
+        </div>
+        <div class="calc-field">
+          <label>Empty km rate (deadheading)</label>
+          <select id="cEmpty" onchange="updateCalc()">
+            <option value="0">0% — no deadhead trips</option>
+            <option value="1">10% — low deadheading</option>
+            <option value="2">20% — moderate deadheading</option>
+            <option value="3">30% — high deadheading</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="result-big down" id="calcBig">—</div>
+        <div class="result-info">
+          <div class="result-verdict down" id="calcVerdict">Select options above</div>
+          <p class="result-desc" id="calcDesc">Choose a user class and empty-km scenario to see the estimated per-user CO₂ impact.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">The Hardest Finding</div>
+    <h2>The public transit security failure has a measurable carbon cost</h2>
+    <p>
+      Class 4 — the Frequent Ride-pooling Travelers — generates the most CO₂ increase per user. But it also has the clearest and most troubling explanation. It is 81% women, predominantly without cars or driving licences, and its defining characteristic is that members use Jetty specifically because public transit in Mexico City is unsafe.
+    </p>
+    <p>
+      These users were not choosing between a car and a van. They were choosing between a bus they fear and a slightly safer service they can afford. The greener option — the metro — was not a real option, because riding it means exposure to theft and sexual harassment so severe that Mexico City metro is considered one of the most dangerous urban rail systems in the world.
+    </p>
+
+    <div class="pull-quote">
+      <p>The insecurity of public transport has a direct impact on CO₂ emissions — and the people paying both costs are overwhelmingly women.</p>
+    </div>
+
+    <p>
+      The implication is direct: the environmental sustainability of pooled rides cannot be separated from the social sustainability of public transit. Making metro systems safer for women is not just a human rights issue — it is, measurably, a climate intervention.
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Key Variables</div>
+    <h2>Income and empty kilometres are the system's two decisive levers</h2>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Income: high-income users are the climate win
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Users with personal income above 30,000 MXN/month reduced total CO₂ by 5.73 million grams across their trips — despite representing only 19% of the sample. Why? Because high-income users disproportionately replace private car trips (43% would have driven if Jetty were unavailable). From a climate policy perspective, the most carbon-valuable pooled-ride users are wealthy car owners choosing to leave their car at home. Low-income users, by contrast, tend to replace public transit, so their adoption increases net emissions. This creates an uncomfortable but important equity-environment tension that policymakers must confront directly.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Empty kilometres: the variable that can flip the entire result
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Deadheading refers to distance driven by Jetty vehicles without passengers — drivers taking vehicles from home to route start points, or vehicles waiting between peak periods. The paper models four scenarios: 0%, 10%, 20%, and 30% empty-km rates. At 0%, the system reduces emissions by 8.53 million grams. At 20%, this flips to an increase of 2.04 million grams. At 30%, the net increase reaches 7.33 million grams. Efficient depot placement and route scheduling are therefore not just operational improvements — they are direct climate interventions.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Vans beat buses on carbon despite lower capacity
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Jetty vans (35.8 g/p·km) achieve better climate outcomes than Jetty buses (95.7 g/p·km), even though buses carry more passengers. The reason is modal substitution, not vehicle efficiency. Van users more often replaced car and taxi trips; bus users more often replaced metro and paratransit. A van carrying 8 people who would otherwise have driven is a climate win. A bus carrying 15 people who would otherwise have taken the metro is a climate loss. The finding from the first paper in this series on VKT is mirrored here in the emissions analysis: vans win on both traffic and carbon metrics, not because of their size, but because of who rides them.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Only 40% of individual users reduce emissions
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Looking at individuals rather than class averages: 40% of Jetty users reduce CO₂ emissions with their pooled trips, and 60% increase them. Of those who reduce emissions, 57% are from Class 1. The distribution is heavily skewed: some users reduce by up to 900 kg, while others increase by up to 330 kg. This individual-level heterogeneity — especially within Class 5 — suggests that even within user segments there is significant variation driven by the specific mode being replaced. One-size-fits-all policies will be insufficient.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Policy Implications</div>
+    <h2>Five targeted actions — one per user class</h2>
+
+    <div class="finding">
+      <div class="finding-n">01</div>
+      <div class="finding-body">
+        <strong>Class 1 — Expand van coverage and invest in pedestrian and bike-friendly egress</strong>
+        <p>Van-Preferred Travelers are the largest class and the biggest aggregate CO₂ reducers. Grow this class: expand van fleet coverage for routes under 21.7 km, invest in cycling infrastructure near van stops, and create corporate ride-pooling subsidy programmes targeting this educated full-time-employed demographic.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">02</div>
+      <div class="finding-body">
+        <strong>Class 2 — Dedicated bus lanes and off-peak incentives</strong>
+        <p>Travel Time-Conscious users chose Jetty buses for time savings. Improve bus operational efficiency through dedicated lanes and real-time scheduling to enhance the time advantage while reducing emissions intensity. Off-peak fare discounts could shift trips away from congested, high-emission periods.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">03</div>
+      <div class="finding-body">
+        <strong>Class 4 — Make public transit safe. This is a climate intervention, not only a social one.</strong>
+        <p>Women who use Jetty to escape harassment are driving the largest per-user emission increases — not because of anything wrong with their choices, but because the formal transit system has failed to provide basic safety. Emergency response systems, improved lighting, security staff at stations, and dedicated carriages are simultaneously a gender equity intervention and a carbon reduction strategy.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">04</div>
+      <div class="finding-body">
+        <strong>Class 5 — Target car owners with premium incentives and carbon credit programmes</strong>
+        <p>Formerly Private Travelers deliver the highest per-user carbon reduction. Personalised carbon credit programmes, employer subsidies, and guaranteed seat-booking services targeting this high-income car-owning demographic can amplify the aggregate climate benefit enormously. Every car-to-Jetty conversion in this class is worth far more than a transit-to-Jetty conversion.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">05</div>
+      <div class="finding-body">
+        <strong>All classes — Minimise deadheading through smart fleet management</strong>
+        <p>At 20% empty kilometres, the entire system flips from net climate benefit to net climate harm. Route optimisation, strategic depot placement near route endpoints, and dynamic repositioning algorithms are the highest-leverage operational decisions an operator can make for climate outcomes.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-block reveal">
+    <h2>Read the full paper</h2>
+    <p>This explainer covers the headline findings. The full paper includes complete LCCA tables, emission factor calculations for all modes, the full sensitivity analysis, and Sankey diagrams showing mode-shift flows for each of the five user classes.</p>
+    <a href="https://doi.org/10.1016/j.trc.2022.103632" target="_blank" class="cta-btn">Access the Paper →</a>
+    <p class="cta-meta">Zhi, Tirachini, Abouelela, Song &amp; Antoniou · Preprint submitted to Elsevier · Beijing Jiaotong / TU Munich / U. Chile</p>
+  </div>
+
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const pct = Math.min(100, (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+const spObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.sp-bar').forEach((b, i) => {
+        setTimeout(() => b.classList.add('animated'), i * 100);
+      });
+      spObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+const spec = document.getElementById('spectrumChart');
+if (spec) spObs.observe(spec);
+
+function toggleClass(id, el) {
+  const allCards = document.querySelectorAll('.class-card');
+  const allDetails = document.querySelectorAll('.class-detail');
+  const detail = document.getElementById(id);
+  const isOpen = detail.classList.contains('visible');
+  allCards.forEach(c => c.classList.remove('active'));
+  allDetails.forEach(d => d.classList.remove('visible'));
+  if (!isOpen) {
+    el.classList.add('active');
+    detail.classList.add('visible');
+  }
+}
+
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const body = item.querySelector('.acc-body');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.acc-body').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+const co2Data = {
+  '1': { vals: [-37.94, -36.07, -34.19, -32.31], dir: 'down' },
+  '2': { vals: [15.47,  21.26,  27.05,  32.83],  dir: 'up' },
+  '3': { vals: [7.11,   8.61,   10.10,  11.60],  dir: 'up' },
+  '4': { vals: [45.46,  56.03,  66.59,  77.15],  dir: 'up' },
+  '5': { vals: [-63.08, -55.43, -47.78, -40.13], dir: 'down' }
+};
+
+const classDescs = {
+  '1': 'Van-Preferred Travelers reduce emissions by using low-emission vans and replacing a mix of car and transit trips. Even significant deadheading does not eliminate their benefit.',
+  '2': 'Travel Time-Conscious riders use only Jetty buses but switched from public transit, so each trip adds CO₂ compared to their previous metro and paratransit combination.',
+  '3': 'Low-frequency morning commuters replaced paratransit and metro trips with Jetty buses. Their low trip frequency limits total impact, but the directional result is an increase.',
+  '4': 'Frequent riders who use Jetty for safety generate the largest per-user increase — because they replaced very low-emission public transit. Higher deadheading makes this substantially worse.',
+  '5': 'Formerly Private Travelers deliver the biggest per-user reduction because they replaced high-emission private car and taxi trips. Deadheading erodes but does not eliminate this benefit.'
+};
+
+function updateCalc() {
+  const cls   = document.getElementById('cClass').value;
+  const empty = parseInt(document.getElementById('cEmpty').value);
+  const d     = co2Data[cls];
+  const val   = d.vals[empty];
+  const dir   = d.dir;
+
+  const bigEl  = document.getElementById('calcBig');
+  const verdEl = document.getElementById('calcVerdict');
+  const descEl = document.getElementById('calcDesc');
+
+  const sign = val > 0 ? '+' : '';
+  bigEl.textContent = sign + val.toFixed(1);
+  bigEl.className = 'result-big ' + dir;
+  verdEl.className = 'result-verdict ' + dir;
+  verdEl.textContent = dir === 'down'
+    ? 'CO2 REDUCED: ' + Math.abs(val).toFixed(1) + ' kg/user saved'
+    : 'CO2 INCREASED: ' + val.toFixed(1) + ' kg/user added';
+  descEl.textContent = classDescs[cls];
+}
+
+updateCalc();
+</script>
+</body>
+</html>

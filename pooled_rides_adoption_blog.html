@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Actually Uses Pooled Rides — and Why? | Research Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --navy: #0d1f35;
+    --teal: #0e7c7b;
+    --teal-light: #14a8a7;
+    --coral: #e05c3a;
+    --gold: #c9980a;
+    --slate: #4a5e72;
+    --mist: #f0f4f8;
+    --border: #dde4ec;
+    --text: #1a2a3a;
+    --muted: #6b7f93;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── READING PROGRESS ── */
+  .progress-bar {
+    position: fixed; top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--teal-light));
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy);
+    color: #fff;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(14,124,123,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,124,123,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(14,124,123,0.18) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+  }
+
+  .hero-glow-2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(224,92,58,0.1) 0%, transparent 70%);
+    bottom: 50px; left: -50px;
+    pointer-events: none;
+  }
+
+  .hero-nav {
+    position: relative; z-index: 2;
+    padding: 1.75rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .hero-nav-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .hero-nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    border: 1px solid var(--teal);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 4rem 3rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    gap: 5rem;
+  }
+
+  .hero-left { flex: 1; }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+
+  h1 .accent { color: var(--teal-light); }
+
+  .hero-deck {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 46ch;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  .hero-authors {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+  }
+
+  /* Hero right: persona cards */
+  .hero-right {
+    width: 340px;
+    flex-shrink: 0;
+  }
+
+  .persona-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1rem;
+  }
+
+  .persona-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .p-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .p-card:hover {
+    background: rgba(14,124,123,0.12);
+    border-color: rgba(14,124,123,0.4);
+    transform: translateX(4px);
+  }
+
+  .p-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .p-text { flex: 1; }
+
+  .p-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    display: block;
+    margin-bottom: 0.1rem;
+  }
+
+  .p-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.04em;
+  }
+
+  .p-prob {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .p-prob.high { color: var(--teal-light); }
+  .p-prob.med  { color: var(--gold); }
+  .p-prob.low  { color: var(--coral); }
+
+  .hero-scroll-hint {
+    position: relative; z-index: 2;
+    padding: 1.5rem 3rem 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .scroll-dots {
+    display: flex; gap: 4px;
+  }
+
+  .scroll-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    animation: dotpulse 2s ease-in-out infinite;
+  }
+
+  .scroll-dot:nth-child(2) { animation-delay: 0.3s; }
+  .scroll-dot:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes dotpulse {
+    0%, 100% { background: rgba(255,255,255,0.15); }
+    50%       { background: var(--teal-light); }
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section { margin-bottom: 5rem; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--teal);
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    color: #2c3e50;
+    margin-bottom: 1.25rem;
+    font-size: 1.02rem;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    position: relative;
+    margin: 2.5rem 0;
+    padding: 1.5rem 1.75rem 1.5rem 2.25rem;
+    background: var(--mist);
+    border-left: 3px solid var(--teal);
+  }
+
+  .pull-quote p {
+    font-family: 'Source Serif 4', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .pull-quote::before {
+    content: '"';
+    position: absolute;
+    top: -0.5rem; left: 1rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    color: var(--teal);
+    opacity: 0.2;
+    line-height: 1;
+  }
+
+  /* ── INTERACTIVE PROFILER ── */
+  .profiler {
+    background: var(--navy);
+    border-radius: 6px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+    color: #e8edf2;
+  }
+
+  .profiler-header {
+    margin-bottom: 1.75rem;
+  }
+
+  .profiler-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.35rem;
+  }
+
+  .profiler-header p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+
+  .profiler-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .profiler-field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.45rem;
+  }
+
+  .profiler-field select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e8edf2;
+    padding: 0.55rem 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    border-radius: 3px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+
+  .profiler-result {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 4px;
+    padding: 1.25rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: all 0.4s ease;
+  }
+
+  .result-meter {
+    flex-shrink: 0;
+    width: 80px;
+    text-align: center;
+  }
+
+  .meter-arc {
+    position: relative;
+    width: 80px; height: 44px;
+    overflow: hidden;
+  }
+
+  .meter-arc svg { width: 80px; height: 80px; margin-top: -40px; }
+
+  .meter-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+    letter-spacing: 0.08em;
+    transition: color 0.4s ease;
+  }
+
+  .result-text { flex: 1; }
+
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    transition: color 0.4s ease;
+  }
+
+  .result-desc {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .tag.high { background: rgba(14,124,123,0.25); color: var(--teal-light); border: 1px solid rgba(14,124,123,0.3); }
+  .tag.med  { background: rgba(201,152,10,0.2);  color: #e0b030; border: 1px solid rgba(201,152,10,0.3); }
+  .tag.low  { background: rgba(224,92,58,0.2);   color: #f07a60; border: 1px solid rgba(224,92,58,0.3); }
+
+  /* ── ADOPTION FACTORS ── */
+  .factors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .factor-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .factor-card:hover {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(14,124,123,0.06);
+    transform: translateY(-2px);
+  }
+
+  .factor-icon {
+    font-size: 1.6rem;
+    display: block;
+    margin-bottom: 0.65rem;
+  }
+
+  .factor-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .factor-desc {
+    font-size: 0.86rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .factor-effect {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  .factor-effect.up   { background: rgba(14,124,123,0.1); color: var(--teal); }
+  .factor-effect.down { background: rgba(224,92,58,0.1);  color: var(--coral); }
+  .factor-effect.mix  { background: rgba(201,152,10,0.1); color: var(--gold); }
+
+  /* ── VAN vs BUS TOGGLE ── */
+  .comparison-block {
+    margin: 2.5rem 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .comparison-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comp-tab {
+    flex: 1;
+    padding: 1rem;
+    background: var(--mist);
+    border: none;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--muted);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .comp-tab.active {
+    background: #fff;
+    color: var(--navy);
+    border-bottom: 2px solid var(--teal);
+    margin-bottom: -1px;
+  }
+
+  .comp-tab:hover:not(.active) {
+    background: #fff;
+    color: var(--navy);
+  }
+
+  .comp-panel { display: none; padding: 1.5rem; }
+  .comp-panel.active { display: block; }
+
+  .comp-list { list-style: none; }
+
+  .comp-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+    color: #2c3e50;
+    align-items: flex-start;
+  }
+
+  .comp-list li:last-child { border-bottom: none; }
+
+  .comp-bullet {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .comp-bullet.teal { background: rgba(14,124,123,0.12); color: var(--teal); }
+  .comp-bullet.coral { background: rgba(224,92,58,0.12); color: var(--coral); }
+
+  /* ── USE FREQUENCY CHART ── */
+  .freq-chart {
+    margin: 2rem 0;
+    background: var(--mist);
+    padding: 1.75rem;
+    border-radius: 4px;
+  }
+
+  .freq-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .freq-row {
+    margin-bottom: 1.1rem;
+    display: grid;
+    grid-template-columns: 160px 1fr 50px;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .freq-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text);
+  }
+
+  .freq-track {
+    height: 10px;
+    background: rgba(0,0,0,0.07);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .freq-fill {
+    height: 100%;
+    border-radius: 5px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .freq-fill.animated { transform: scaleX(1); }
+
+  .freq-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* ── ACCORDION ── */
+  .accordion { margin: 1.5rem 0; }
+
+  .acc-item { border-top: 1px solid var(--border); }
+
+  .acc-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.97rem;
+    font-weight: 400;
+    color: var(--text);
+    text-align: left;
+    gap: 1rem;
+  }
+
+  .acc-trigger:hover { color: var(--teal); }
+
+  .acc-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--muted);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .acc-item.open .acc-icon {
+    transform: rotate(45deg);
+    color: var(--teal);
+  }
+
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .acc-body-inner {
+    padding: 0 0 1.25rem;
+    font-size: 0.92rem;
+    color: #4a5e6a;
+    line-height: 1.7;
+  }
+
+  /* ── KEY FINDINGS ── */
+  .finding-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .finding-item:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .finding-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--border);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 3rem;
+    text-align: right;
+  }
+
+  .finding-body strong {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.97rem;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .finding-body p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.65;
+  }
+
+  /* ── CTA ── */
+  .cta-block {
+    background: linear-gradient(135deg, var(--navy) 0%, #0a3347 100%);
+    color: #fff;
+    padding: 3rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-block::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(14,124,123,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,124,123,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .cta-block h2 {
+    color: #fff;
+    position: relative; z-index: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-block p {
+    color: rgba(255,255,255,0.55);
+    max-width: 52ch;
+    margin: 0 auto 2rem;
+    position: relative; z-index: 1;
+    font-size: 0.95rem;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--teal);
+    color: #fff;
+    padding: 0.9rem 2.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    position: relative; z-index: 1;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .cta-btn:hover {
+    background: var(--teal-light);
+    transform: translateY(-2px);
+  }
+
+  .cta-meta {
+    margin-top: 1.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+    position: relative; z-index: 1;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 4rem 0;
+    color: var(--border);
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  /* ── STAT CALLOUT ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .stat-box {
+    background: var(--mist);
+    border-radius: 4px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+  }
+
+  .stat-box .big {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--teal);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-box .caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 760px) {
+    .hero-content { flex-direction: column; gap: 2.5rem; padding: 3rem 1.5rem 2rem; }
+    .hero-right { width: 100%; }
+    .hero-nav { padding: 1.25rem 1.5rem; }
+    main { padding: 3rem 1.25rem; }
+    .profiler-grid { grid-template-columns: 1fr; }
+    .factors-grid { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: 1fr; }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+
+  <nav class="hero-nav">
+    <span class="hero-nav-tag">Transportation Research Part C · 2022</span>
+    <span class="hero-nav-badge">Open Access</span>
+  </nav>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <span class="hero-tag">Research Explainer · Pooled Mobility</span>
+      <h1>Who actually uses <span class="accent">pooled rides</span> — and what keeps them coming back?</h1>
+      <p class="hero-deck">
+        UberPool flopped. LyftShare never scaled. Yet some pooled services thrive. A new study digs into the real psychology and demographics behind who adopts shared rides — and what predicts how often they use them.
+      </p>
+      <div class="hero-authors">
+        Abouelela · Tirachini · Chaniotakis · Antoniou<br>
+        TU Munich · U. Chile · UCL London<br>
+        1,118 users · Mexico City · 54,175 trip records
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="persona-label">Likelihood to be a frequent user</div>
+      <div class="persona-cards">
+        <div class="p-card">
+          <span class="p-icon">👩‍💼</span>
+          <div class="p-text">
+            <span class="p-name">High-income woman, full-time</span>
+            <span class="p-desc">Car at home · commutes north→center</span>
+          </div>
+          <span class="p-prob high">↑↑ High</span>
+        </div>
+        <div class="p-card">
+          <span class="p-icon">🧑‍🎓</span>
+          <div class="p-text">
+            <span class="p-name">Young professional, no car</span>
+            <span class="p-desc">PT user · lives in CDMX center</span>
+          </div>
+          <span class="p-prob low">↓ Lower</span>
+        </div>
+        <div class="p-card">
+          <span class="p-icon">👨‍💻</span>
+          <div class="p-text">
+            <span class="p-name">Mid-income man, car owner</span>
+            <span class="p-desc">Long commute · avoids parking</span>
+          </div>
+          <span class="p-prob med">→ Medium</span>
+        </div>
+        <div class="p-card">
+          <span class="p-icon">👩‍🔬</span>
+          <div class="p-text">
+            <span class="p-name">Fem. survivor of harassment in PT</span>
+            <span class="p-desc">Security-driven · van user</span>
+          </div>
+          <span class="p-prob high">↑↑ High</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-dots">
+      <div class="scroll-dot"></div>
+      <div class="scroll-dot"></div>
+      <div class="scroll-dot"></div>
+    </div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- THE CONTEXT -->
+  <section class="section reveal">
+    <div class="section-label">The Problem</div>
+    <h2>Pooling has enormous potential — but most people skip it</h2>
+    <p>
+      The maths of pooled rides is compelling: put 8 strangers in a van going the same direction, and you remove 7 private cars from the road. Reduce vehicle kilometres travelled. Cut emissions. Ease congestion. The theory works beautifully on paper.
+    </p>
+    <p>
+      The practice has been more humbling. Studies estimate that only about 20% of ride-hailing users choose the pooled option when it is offered. Of those, the trips where more than one rider actually gets matched — a "real" pooled trip — account for just 2–7% of all ride-hailing journeys. Services like UberPOOL and LyftShare never cracked mass adoption despite years of subsidised fares.
+    </p>
+    <p>
+      Why? And what can we learn from a service that <em>does</em> work? This study — using unusually rich individual-level data from Jetty, a pooled-ride platform in Mexico City — attempts to answer exactly that.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <span class="big">20%</span>
+        <span class="caption">Share of ride-hailing users who choose pooled when available</span>
+      </div>
+      <div class="stat-box">
+        <span class="big">2–7%</span>
+        <span class="caption">Trips that materialise as genuinely shared rides</span>
+      </div>
+      <div class="stat-box">
+        <span class="big">50%</span>
+        <span class="caption">Pooled share needed to meaningfully reduce VKT (Rodier et al.)</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- THE APPROACH -->
+  <section class="section reveal">
+    <div class="section-label">The Research</div>
+    <h2>Four questions, one rich dataset</h2>
+    <p>
+      The researchers combined three complementary data sources: a detailed online survey of 1,118 Jetty users in Mexico City; six months of actual trip records (54,175 trips) linked to those same users; and GTFS public transit files mapping each user's proximity to Metro, BRT, and bus services.
+    </p>
+    <p>
+      This combination is rare in shared-mobility research, where most studies rely on aggregated data. Having individual trip records linked to survey responses meant the team could test whether stated preferences matched actual behaviour — and study not just who uses the service, but how often, and in which vehicle type.
+    </p>
+
+    <div class="pull-quote">
+      <p>The scarcity of user-level data has hindered the investigation of sociodemographic factors driving many dimensions of shared services.</p>
+    </div>
+
+    <p>
+      They answered four research questions: What makes someone shift from their current mode to a pooled service? What determines whether they choose a van versus a bus? And what predicts how frequently they keep using it — including whether underlying travel attitudes (not just demographics) matter?
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- INTERACTIVE PROFILER -->
+  <section class="section reveal">
+    <div class="section-label">Interactive Tool</div>
+    <h2>Who is likely to adopt pooled rides?</h2>
+    <p>Based on the paper's hybrid choice model, explore how different user profiles affect adoption likelihood. The model found that demographics and latent travel attitudes jointly drive the shift from car-based trips to pooled services.</p>
+
+    <div class="profiler">
+      <div class="profiler-header">
+        <h3>Adoption Likelihood Profiler</h3>
+        <p>BASED ON TABLE 9 HCM RESULTS — TIRACHINI ET AL. 2022</p>
+      </div>
+
+      <div class="profiler-grid">
+        <div class="profiler-field">
+          <label>Age group</label>
+          <select id="pAge" onchange="updateProfiler()">
+            <option value="young">18–25</option>
+            <option value="mid" selected>26–35</option>
+            <option value="older">36–45</option>
+            <option value="oldest">46+</option>
+          </select>
+        </div>
+        <div class="profiler-field">
+          <label>Gender</label>
+          <select id="pGender" onchange="updateProfiler()">
+            <option value="female">Female</option>
+            <option value="male" selected>Male</option>
+          </select>
+        </div>
+        <div class="profiler-field">
+          <label>Personal income</label>
+          <select id="pIncome" onchange="updateProfiler()">
+            <option value="low">Under 20K MXN/mo</option>
+            <option value="mid" selected>20K–40K MXN/mo</option>
+            <option value="high">Over 40K MXN/mo</option>
+          </select>
+        </div>
+        <div class="profiler-field">
+          <label>Cars in household</label>
+          <select id="pCars" onchange="updateProfiler()">
+            <option value="none">No car</option>
+            <option value="one" selected>1 car</option>
+            <option value="two">2+ cars</option>
+          </select>
+        </div>
+        <div class="profiler-field">
+          <label>Household size</label>
+          <select id="pHH" onchange="updateProfiler()">
+            <option value="small" selected>1–2 persons</option>
+            <option value="mid">3–5 persons</option>
+            <option value="large">6+ persons</option>
+          </select>
+        </div>
+        <div class="profiler-field">
+          <label>Primary transit habit</label>
+          <select id="pTransit" onchange="updateProfiler()">
+            <option value="pt">Frequent PT user</option>
+            <option value="car" selected>Car / e-hailing</option>
+            <option value="micro">Micro-mobility</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="profiler-result" id="profilerResult">
+        <div class="result-meter">
+          <div class="meter-arc">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8" stroke-dasharray="100 101" stroke-dashoffset="-25" stroke-linecap="round"/>
+              <circle id="meterCircle" cx="40" cy="40" r="32" fill="none" stroke="#0e7c7b" stroke-width="8" stroke-dasharray="60 101" stroke-dashoffset="-25" stroke-linecap="round" style="transition: stroke-dasharray 0.6s ease, stroke 0.4s ease;"/>
+            </svg>
+          </div>
+          <div class="meter-label" id="meterLabel" style="color: var(--teal-light);">Medium</div>
+        </div>
+        <div class="result-text">
+          <div class="result-title" id="resultTitle">Moderate adoption likelihood</div>
+          <p class="result-desc" id="resultDesc">This profile has some factors favouring adoption (car ownership, income) but neutral transit habits reduce the shift probability from car trips to pooled rides.</p>
+          <div class="result-tags" id="resultTags">
+            <span class="tag high">Car owner ↑</span>
+            <span class="tag med">Mid income →</span>
+            <span class="tag med">PT neutral →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- ADOPTION DRIVERS -->
+  <section class="section reveal">
+    <div class="section-label">Key Findings</div>
+    <h2>What actually drives people to switch?</h2>
+    <p>
+      The hybrid choice model revealed that adopting pooled rides — specifically shifting away from car-based trips — is shaped by a mix of hard demographics, trip context, and latent travel attitudes. Here are the most significant factors:
+    </p>
+
+    <div class="factors-grid">
+      <div class="factor-card">
+        <span class="factor-icon">🚗</span>
+        <span class="factor-name">Car ownership</span>
+        <p class="factor-desc">Having 1 or 2+ cars in the household significantly increases the likelihood of shifting to Jetty from car trips. These users have a real alternative to give up — and the model captures it.</p>
+        <span class="factor-effect up">↑ Increases adoption from car trips</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">💰</span>
+        <span class="factor-name">Personal income</span>
+        <p class="factor-desc">The strongest sociodemographic predictor. High-income users (40K+ MXN/month) are far more likely to shift, use vans, and use the service more frequently than lower-income groups.</p>
+        <span class="factor-effect up">↑↑ Strongest sociodemographic factor</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">👩</span>
+        <span class="factor-name">Gender (female)</span>
+        <p class="factor-desc">Women are more likely to shift from car-based trips to Jetty and to prefer vans over buses. Women who cite harassment avoidance as a reason are among the most frequent users.</p>
+        <span class="factor-effect up">↑ More likely to shift and use frequently</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">🎂</span>
+        <span class="factor-name">Youth (18–35)</span>
+        <p class="factor-desc">Younger users are significantly more likely to shift from car trips to pooled rides — consistent with the general profile of shared mobility users across different cities and services.</p>
+        <span class="factor-effect up">↑ Affects shift decision (not frequency)</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">🚇</span>
+        <span class="factor-name">Frequent PT use (latent)</span>
+        <p class="factor-desc">People who habitually use metro and buses are actually <em>less</em> likely to shift to Jetty from car trips. This latent attitude was the second strongest predictor in the model — bigger than most demographics.</p>
+        <span class="factor-effect down">↓ Reduces shift from car trips</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">📱</span>
+        <span class="factor-name">Multi-tasking</span>
+        <p class="factor-desc">Users who use their smartphones, work, read, or sleep during Jetty trips are more likely to shift and to use the service frequently. Being a passenger — not a driver — is a productivity gain.</p>
+        <span class="factor-effect up">↑ Activity during trip drives adoption</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">🅿️</span>
+        <span class="factor-name">Avoiding parking</span>
+        <p class="factor-desc">Citing parking as a reason is a significant predictor of shifting from car trips — especially for male users, who drive more and own more licences in this sample.</p>
+        <span class="factor-effect up">↑ Notably stronger for men</span>
+      </div>
+      <div class="factor-card">
+        <span class="factor-icon">🏠</span>
+        <span class="factor-name">City residency</span>
+        <p class="factor-desc">Users living <em>outside</em> CDMX proper — in the metropolitan periphery — are more likely to shift from car trips to Jetty. Jetty was specifically designed to serve the poorly-connected northern suburbs.</p>
+        <span class="factor-effect mix">↑ Outside city core → higher adoption</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- VAN vs BUS -->
+  <section class="section reveal">
+    <div class="section-label">Vehicle Choice</div>
+    <h2>Van or bus? The choice reveals a lot</h2>
+    <p>
+      Among users, 98% ride either buses (68% of trips) or vans (30%). The bus is cheaper, larger, and more "transit-like"; the van is smaller, pricier, and closer in feel to a private car. Who chooses which — and why — illuminates how users trade off cost against comfort.
+    </p>
+
+    <div class="comparison-block">
+      <div class="comparison-tabs">
+        <button class="comp-tab active" onclick="switchTab('van', this)">🚐 Van users</button>
+        <button class="comp-tab" onclick="switchTab('bus', this)">🚌 Bus users</button>
+      </div>
+
+      <div class="comp-panel active" id="panel-van">
+        <ul class="comp-list">
+          <li><span class="comp-bullet teal">✓</span>More likely to be female, full-time employed, high-income</li>
+          <li><span class="comp-bullet teal">✓</span>Access and egress Jetty by walking or cycling (shorter distances)</li>
+          <li><span class="comp-bullet teal">✓</span>Work during the trip — the van is closer in quality to a private car</li>
+          <li><span class="comp-bullet teal">✓</span>Located where Metro headways are shorter (better PT alternative nearby — yet still choose Jetty)</li>
+          <li><span class="comp-bullet teal">✓</span>Cite security against theft as a reason — smaller vehicle feels safer</li>
+          <li><span class="comp-bullet teal">✓</span>Replace more car trips (15% would have driven themselves vs. 10% for bus users)</li>
+          <li><span class="comp-bullet coral">✗</span>Less frequent overall Jetty users (cost-sensitive at higher fares)</li>
+        </ul>
+      </div>
+
+      <div class="comp-panel" id="panel-bus">
+        <ul class="comp-list">
+          <li><span class="comp-bullet teal">✓</span>More likely small households (1–2 persons) and lower-income groups</li>
+          <li><span class="comp-bullet teal">✓</span>Most frequent Jetty users overall — bus is affordable enough for daily use</li>
+          <li><span class="comp-bullet teal">✓</span>Willing to walk longer distances to access stops</li>
+          <li><span class="comp-bullet teal">✓</span>More likely to talk on the phone — social comfort in a larger group</li>
+          <li><span class="comp-bullet teal">✓</span>Cite seat booking and ease of payment as key reasons (transit-like behaviour)</li>
+          <li><span class="comp-bullet coral">✗</span>Primarily replace public transit trips — Metro + Microbus combos (23%)</li>
+          <li><span class="comp-bullet coral">✗</span>Smaller VKT-reduction impact because they were already using shared modes</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>
+      The policy implication is sharp: van users are the sustainability win. They pull car drivers out of cars. Bus users are important for equity and network coverage — but their contribution to reducing vehicle kilometres is smaller because they were never driving in the first place.
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- FREQUENCY -->
+  <section class="section reveal">
+    <div class="section-label">Frequency of Use</div>
+    <h2>What keeps riders coming back?</h2>
+    <p>On average, users made 1.7 trips per week on Jetty across the seven-month study period. But use is distributed very unevenly — a core group of daily commuters drives the majority of trips.</p>
+
+    <div class="freq-chart" id="freqChart">
+      <div class="freq-title">Distribution of Jetty use frequency (N = 1,118)</div>
+
+      <div class="freq-row">
+        <div class="freq-label">4+ times/week</div>
+        <div class="freq-track"><div class="freq-fill" style="width:36.1%; background: var(--teal);"></div></div>
+        <div class="freq-pct">36%</div>
+      </div>
+      <div class="freq-row">
+        <div class="freq-label">1–3 times/week</div>
+        <div class="freq-track"><div class="freq-fill" style="width:28.4%; background: var(--teal-light);"></div></div>
+        <div class="freq-pct">28%</div>
+      </div>
+      <div class="freq-row">
+        <div class="freq-label">1–3 times/month</div>
+        <div class="freq-track"><div class="freq-fill" style="width:22.9%; background: var(--slate);"></div></div>
+        <div class="freq-pct">23%</div>
+      </div>
+      <div class="freq-row">
+        <div class="freq-label">&lt; Once/month</div>
+        <div class="freq-track"><div class="freq-fill" style="width:12.6%; background: var(--border);"></div></div>
+        <div class="freq-pct">13%</div>
+      </div>
+    </div>
+
+    <p>The model identified several key predictors of use frequency — and some surprising non-findings:</p>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Trip distance: longer trips → more frequent use
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Users with longer average Jetty trips use the service more often. This makes intuitive sense: for short trips, PT or walking might be competitive. For long, complex commutes — especially ones that would otherwise require 2–3 mode transfers — Jetty offers time savings that increase with distance. The convenience premium is larger when the alternative is genuinely painful.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Metro accessibility: worse metro service → more Jetty use
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Users whose nearest Metro station has longer headways (more infrequent service) use Jetty more often. This directly models Jetty as a complement to public transit gaps. Where the metro runs frequently, users rely on it. Where it runs poorly, Jetty fills the void. This has strong implications for where new pooled services should be deployed: target the gaps in formal transit coverage.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Activity during the trip: productive riders are frequent riders
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Users who sleep, study, read for pleasure, or work during Jetty trips are significantly more likely to be frequent users. This points to a "reclaimed time" effect: being a passenger rather than a driver converts dead commute time into productive or restorative time. Users who experience this time gain are more motivated to keep using the service. Service operators should lean into this — comfortable seating, stable Wi-Fi, and quiet environments are not just nice-to-haves.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Access/egress distance: longer walk → less frequent use
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            The further users have to walk or travel to reach a Jetty pick-up point — or from the drop-off to their destination — the less frequently they use the service. This is a classic last-mile finding, but it has a clear operational implication: dynamically updating pick-up and drop-off locations based on actual demand patterns can directly boost frequency. The research notes Jetty already does this to some extent.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Security against harassment: a frequency driver for women
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            The interaction term (Female x Reason: Security Against Harassment) is statistically significant and positive: women who specifically use Jetty because it protects them from the harassment they experience in CDMX public transit are among the most frequent users. This demographic is not a niche — it represents a genuine quality-of-life improvement that the formal transit system is failing to provide. Safety is not a soft feature; it is a core service attribute driving retention.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Fare: a usage deterrent despite being an adoption driver
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Interestingly, citing "fare" as a reason to use Jetty is associated with shifting to the service from car trips — because Jetty is cheaper than taxis and e-hailing. But the same factor negatively predicts frequency of use, because Jetty is expensive compared to metro or colectivos. Users who joined because of cost savings relative to their previous mode will reduce usage as costs accumulate over time. This tension matters for pricing strategy.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <!-- KEY TAKEAWAYS -->
+  <section class="section reveal">
+    <div class="section-label">Implications</div>
+    <h2>Five things city planners should take from this</h2>
+
+    <div class="finding-item">
+      <div class="finding-num">01</div>
+      <div class="finding-body">
+        <strong>Target car users — not transit users</strong>
+        <p>The pooled service only reduces traffic when it pulls people out of cars and taxis, not out of buses and metros. Route design, marketing, and pricing should be calibrated to attract car-owning, car-driving commuters — the people currently adding the most VKT to the network.</p>
+      </div>
+    </div>
+    <div class="finding-item">
+      <div class="finding-num">02</div>
+      <div class="finding-body">
+        <strong>Deploy in transit gaps, not in transit-rich corridors</strong>
+        <p>Jetty use increases where Metro headways are long. Pooled services work best as genuine complements to formal public transit, not as competitors to it. Urban authorities should map transit gaps and fast-track pooled service licences in those areas.</p>
+      </div>
+    </div>
+    <div class="finding-item">
+      <div class="finding-num">03</div>
+      <div class="finding-body">
+        <strong>Safety is not a brand attribute — it is an infrastructure gap</strong>
+        <p>The finding that women who use Jetty primarily to escape harassment are the most frequent users is both the most compelling and the most troubling result in the paper. It indicates formal public transit in Mexico City is failing a fundamental obligation. Pooled services can help — but they cannot substitute for the deeper problem.</p>
+      </div>
+    </div>
+    <div class="finding-item">
+      <div class="finding-num">04</div>
+      <div class="finding-body">
+        <strong>Minimise the last-mile penalty</strong>
+        <p>Access and egress distance directly reduces frequency. Dynamic relocation of pick-up and drop-off points in response to demand clusters is one of the highest-leverage operational decisions a pooled service can make.</p>
+      </div>
+    </div>
+    <div class="finding-item">
+      <div class="finding-num">05</div>
+      <div class="finding-body">
+        <strong>Address equity before scaling</strong>
+        <p>The service is dominated by high-income, highly educated users with cars. This is a common pattern in shared mobility globally — but it means the service currently provides a premium option for already-privileged commuters. Integration into formal transit with fare subsidies is essential before treating pooled rides as a city-wide solution.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-block reveal">
+    <h2>Go deeper</h2>
+    <p>This explainer covers the main findings. The full paper includes complete model tables, the hybrid choice model specification, EFA factor loadings, and a detailed comparative analysis of van versus bus users. Open access — free to read.</p>
+    <a href="https://doi.org/10.1016/j.trc.2022.103632" target="_blank" class="cta-btn">Read the Full Paper →</a>
+    <p class="cta-meta">Abouelela et al. (2022) · Transportation Research Part C Vol. 138 · DOI: 10.1016/j.trc.2022.103632 · Open Access CC BY 4.0</p>
+  </div>
+
+</main>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const pct = Math.min(100, (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+// ── SCROLL REVEAL ──
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── FREQUENCY CHART ANIMATION ──
+const freqObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.freq-fill').forEach((f, i) => {
+        setTimeout(() => f.classList.add('animated'), i * 150);
+      });
+      freqObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+const freqChart = document.getElementById('freqChart');
+if (freqChart) freqObs.observe(freqChart);
+
+// ── ACCORDION ──
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const body = item.querySelector('.acc-body');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.acc-body').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+// ── VAN/BUS TABS ──
+function switchTab(type, btn) {
+  document.querySelectorAll('.comp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.comp-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + type).classList.add('active');
+}
+
+// ── PROFILER ──
+function updateProfiler() {
+  const age     = document.getElementById('pAge').value;
+  const gender  = document.getElementById('pGender').value;
+  const income  = document.getElementById('pIncome').value;
+  const cars    = document.getElementById('pCars').value;
+  const hh      = document.getElementById('pHH').value;
+  const transit = document.getElementById('pTransit').value;
+
+  let score = 0;
+  const tags = [];
+
+  // Age effect
+  if (age === 'young')  { score += 2; tags.push({text: 'Youth 18-25 ↑↑', cls: 'high'}); }
+  else if (age === 'mid') { score += 1; tags.push({text: 'Age 26-35 ↑', cls: 'high'}); }
+  else if (age === 'older') { score += 0.5; tags.push({text: 'Age 36-45 ~', cls: 'med'}); }
+  else { tags.push({text: 'Age 46+ baseline', cls: 'low'}); }
+
+  // Gender
+  if (gender === 'female') { score += 1.5; tags.push({text: 'Female ↑', cls: 'high'}); }
+  else { tags.push({text: 'Male neutral', cls: 'med'}); }
+
+  // Income
+  if (income === 'high')   { score += 2.5; tags.push({text: 'High income ↑↑', cls: 'high'}); }
+  else if (income === 'mid') { score += 1;   tags.push({text: 'Mid income ↑', cls: 'med'}); }
+  else { tags.push({text: 'Low income baseline', cls: 'low'}); }
+
+  // Cars
+  if (cars === 'two')  { score += 2; tags.push({text: '2+ cars ↑↑', cls: 'high'}); }
+  else if (cars === 'one') { score += 1.5; tags.push({text: '1 car ↑', cls: 'high'}); }
+  else { tags.push({text: 'No car ↓', cls: 'low'}); }
+
+  // HH
+  if (hh === 'small') { score += 1; tags.push({text: 'Small HH ↑', cls: 'high'}); }
+  else if (hh === 'large') { score -= 0.5; tags.push({text: 'Large HH ↓', cls: 'low'}); }
+
+  // Transit attitude
+  if (transit === 'pt')    { score -= 2; tags.push({text: 'PT habit ↓↓', cls: 'low'}); }
+  else if (transit === 'car')  { score += 1; tags.push({text: 'Car habit ↑', cls: 'high'}); }
+  else { score += 0.5; tags.push({text: 'Micro-mobility ↑', cls: 'med'}); }
+
+  // Map score to outcome
+  let level, title, desc, color, dashArr;
+  if (score >= 7) {
+    level = 'High'; title = 'Strong adoption likelihood';
+    desc = 'This profile closely matches the core Jetty adopter: car-owning, higher-income, younger, female or male with car-oriented travel habits. The model predicts a high probability of shifting from car-based trips.';
+    color = '#0e7c7b'; dashArr = '88 101';
+  } else if (score >= 4) {
+    level = 'Medium'; title = 'Moderate adoption likelihood';
+    desc = 'Several factors favour adoption, but some counterbalancing forces (lower income, PT habits, age) reduce probability. This person may adopt under the right conditions — pricing, route coverage, or security improvements could tip the balance.';
+    color = '#c9980a'; dashArr = '55 101';
+  } else {
+    level = 'Lower'; title = 'Lower adoption likelihood';
+    desc = 'This profile is less aligned with Jetty adopters based on the model. Likely either a frequent PT user who does not need Jetty, or lacks the income premium to regularly use the service. Better transit integration and subsidies would help.';
+    color = '#e05c3a'; dashArr = '25 101';
+  }
+
+  document.getElementById('meterCircle').setAttribute('stroke-dasharray', dashArr);
+  document.getElementById('meterCircle').setAttribute('stroke', color);
+  document.getElementById('meterLabel').textContent = level;
+  document.getElementById('meterLabel').style.color = color;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultTitle').style.color = color;
+  document.getElementById('resultDesc').textContent = desc;
+
+  const tagsEl = document.getElementById('resultTags');
+  tagsEl.innerHTML = tags.slice(0, 5).map(t => `<span class="tag ${t.cls}">${t.text}</span>`).join('');
+}
+
+updateProfiler();
+</script>
+</body>
+</html>

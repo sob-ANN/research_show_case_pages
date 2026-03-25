@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can Shared Rides Fix Our Cities? — Research Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #ffffff;
+    --cream: #f2f2f2;
+    --rust: #c0392b;
+    --amber: #d4820a;
+    --forest: #1a5c3a;
+    --steel: #3a5a72;
+    --muted: #7a7065;
+    --rule: #e0e0e0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(192,57,43,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 20% 80%, rgba(26,92,58,0.06) 0%, transparent 55%),
+      var(--paper);
+  }
+
+  .hero-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cfc8bc' fill-opacity='0.35'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  .masthead {
+    position: relative; z-index: 2;
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .masthead-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .masthead-pill {
+    background: var(--rust);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2px;
+  }
+
+  .hero-body {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 5rem 3rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-text { }
+
+  .kicker {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 4vw, 3.6rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .hero-deck {
+    font-size: 1.05rem;
+    color: #4a4540;
+    max-width: 42ch;
+    margin-bottom: 2rem;
+    line-height: 1.75;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Animated city diagram */
+  .city-diagram {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .city-diagram svg { width: 100%; height: auto; }
+
+  .road { stroke: #3a3530; stroke-width: 8; fill: none; }
+  .road-marking { stroke: #5a5248; stroke-width: 1.5; stroke-dasharray: 12 8; fill: none; }
+
+  .vehicle {
+    animation: drive 4s linear infinite;
+  }
+  .vehicle-b { animation-delay: -2s; }
+  .vehicle-c { animation-delay: -3.3s; }
+
+  @keyframes drive {
+    0%   { transform: translateX(-80px); opacity: 0; }
+    5%   { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateX(420px); opacity: 0; }
+  }
+
+  .pulse-dot {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { r: 5; opacity: 0.8; }
+    50%       { r: 9; opacity: 0.3; }
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    border-radius: 3px;
+    text-align: center;
+  }
+
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--rust);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-card .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    display: block;
+  }
+
+  .hero-scroll {
+    position: relative; z-index: 2;
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .scroll-line {
+    width: 40px; height: 1px;
+    background: var(--muted);
+    animation: scrollpulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollpulse {
+    0%, 100% { width: 40px; }
+    50%       { width: 70px; }
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  /* Sections fade in */
+  .section {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    margin-bottom: 5rem;
+  }
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 2rem 0 0.75rem;
+  }
+
+  p {
+    margin-bottom: 1.25rem;
+    color: #2d2a26;
+    font-size: 1.02rem;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 3px solid var(--rust);
+    margin: 2.5rem 0;
+    padding: 1.25rem 1.75rem;
+    background: var(--cream);
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── INTERACTIVE VKT EXPLORER ── */
+  .vkt-explorer {
+    background: var(--ink);
+    color: #e8e2d8;
+    border-radius: 4px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+  }
+
+  .vkt-explorer h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: #e8e2d8;
+    margin: 0 0 0.4rem;
+  }
+
+  .vkt-explorer p.sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: #8a8278;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.75rem;
+  }
+
+  .explorer-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .control-group label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8a8278;
+    margin-bottom: 0.5rem;
+  }
+
+  .control-group select,
+  .control-group input[type="range"] {
+    width: 100%;
+    background: #1e1c19;
+    border: 1px solid #3a3530;
+    color: #e8e2d8;
+    padding: 0.5rem 0.75rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    border-radius: 3px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="range"] {
+    padding: 0 !important;
+    height: 4px;
+    accent-color: var(--rust);
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: #5a5248;
+    margin-top: 0.35rem;
+  }
+
+  .vkt-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background: #1e1c19;
+    padding: 1.5rem;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+  }
+
+  .vkt-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    transition: all 0.4s ease;
+  }
+
+  .vkt-number.positive { color: var(--rust); }
+  .vkt-number.negative { color: #4caf7d; }
+  .vkt-number.neutral  { color: var(--amber); }
+
+  .vkt-text {
+    flex: 1;
+  }
+
+  .vkt-text .verdict {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    transition: color 0.4s ease;
+  }
+
+  .vkt-text .verdict.positive { color: var(--rust); }
+  .vkt-text .verdict.negative { color: #4caf7d; }
+  .vkt-text .verdict.neutral  { color: var(--amber); }
+
+  .vkt-text .explanation {
+    color: #8a8278;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ── BAR CHART ── */
+  .chart-wrap {
+    margin: 2.5rem 0;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    padding: 1.75rem;
+    border-radius: 3px;
+  }
+
+  .chart-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .bar-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    width: 120px;
+    flex-shrink: 0;
+    color: var(--ink);
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 28px;
+    background: #e0d9cd;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    padding-right: 0.5rem;
+    justify-content: flex-end;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-fill.animated { transform: scaleX(1); }
+
+  .bar-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
+  /* ── VEHICLE COMPARE ── */
+  .vehicle-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .v-card {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .v-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .v-card.car::after   { background: var(--rust); }
+  .v-card.van::after   { background: var(--forest); }
+  .v-card.bus::after   { background: var(--steel); }
+
+  .v-card:hover::after,
+  .v-card.active::after { transform: scaleX(1); }
+
+  .v-card:hover, .v-card.active {
+    border-color: var(--ink);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .v-icon { font-size: 2.2rem; margin-bottom: 0.5rem; display: block; }
+
+  .v-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .v-vkt {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .v-card.car .v-vkt   { color: var(--rust); }
+  .v-card.van .v-vkt   { color: var(--forest); }
+  .v-card.bus .v-vkt   { color: var(--steel); }
+
+  .v-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: block;
+  }
+
+  .v-detail {
+    display: none;
+    padding: 1.25rem;
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    font-size: 0.9rem;
+    color: #4a4540;
+    line-height: 1.6;
+  }
+
+  .v-detail.visible { display: block; }
+
+  /* ── KEY FINDINGS ── */
+  .findings-list {
+    list-style: none;
+    counter-reset: findings;
+    margin: 1.5rem 0;
+  }
+
+  .findings-list li {
+    counter-increment: findings;
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+    align-items: flex-start;
+  }
+
+  .findings-list li:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .finding-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--rule);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2.5rem;
+    text-align: right;
+  }
+
+  .finding-text strong {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .finding-text span {
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+
+  /* ── ACCORDION ── */
+  .accordion { margin: 1.5rem 0; }
+
+  .acc-item {
+    border-top: 1px solid var(--rule);
+  }
+
+  .acc-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    gap: 1rem;
+  }
+
+  .acc-trigger:hover { color: var(--rust); }
+
+  .acc-icon {
+    font-size: 1.2rem;
+    color: var(--muted);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .acc-item.open .acc-icon { transform: rotate(45deg); color: var(--rust); }
+
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .acc-body-inner {
+    padding: 0 0 1.25rem;
+    font-size: 0.92rem;
+    color: #4a4540;
+    line-height: 1.7;
+  }
+
+  /* ── CTA ── */
+  .cta-block {
+    background: var(--ink);
+    color: #e8e2d8;
+    padding: 3rem;
+    border-radius: 4px;
+    text-align: center;
+    margin-top: 5rem;
+  }
+
+  .cta-block h2 {
+    color: #e8e2d8;
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .cta-block p {
+    color: #8a8278;
+    max-width: 50ch;
+    margin: 0 auto 2rem;
+    font-size: 0.95rem;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--rust);
+    color: #fff;
+    padding: 0.85rem 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .cta-btn:hover {
+    background: #a02e22;
+    transform: translateY(-2px);
+  }
+
+  .cta-meta {
+    margin-top: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: #5a5248;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .reading-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--rust);
+    z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    text-align: center;
+    margin: 3.5rem 0;
+    color: var(--rule);
+    font-size: 1.1rem;
+    letter-spacing: 0.5em;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip-wrap {
+    position: relative;
+    display: inline;
+  }
+
+  .tooltip-trigger {
+    border-bottom: 1px dashed var(--rust);
+    cursor: help;
+    color: var(--rust);
+  }
+
+  .tooltip-box {
+    display: none;
+    position: absolute;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #e8e2d8;
+    padding: 0.75rem 1rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    width: 220px;
+    line-height: 1.5;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .tooltip-wrap:hover .tooltip-box { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 750px) {
+    .hero-body { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem 2rem; }
+    .hero-visual { display: none; }
+    .masthead { padding: 1.25rem 1.5rem; }
+    main { padding: 3rem 1.25rem; }
+    .explorer-controls { grid-template-columns: 1fr; }
+    .vehicle-cards { grid-template-columns: 1fr; }
+    h1 { font-size: 2rem; }
+    .stat-strip { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="reading-progress" id="readingBar"></div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+
+  <nav class="masthead">
+    <span class="masthead-tag">Transportation Research Part C · 2020</span>
+    <span class="masthead-pill">Peer Reviewed</span>
+  </nav>
+
+  <div class="hero-body">
+    <div class="hero-text">
+      <span class="kicker">Research Explainer · Shared Mobility</span>
+      <h1>Can shared rides <em>actually</em> cut city traffic?</h1>
+      <p class="hero-deck">
+        Uber and Lyft are making congestion worse. But what about apps that specifically match riders for shared trips — vans, buses, carpools? A new study from Mexico City holds a surprising answer.
+      </p>
+      <div class="hero-meta">
+        <span>Tirachini · Chaniotakis · Abouelela · Antoniou</span>
+        <span>2,169 riders surveyed</span>
+        <span>Mexico City</span>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <!-- Animated city SVG -->
+      <div class="city-diagram">
+        <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Roads -->
+          <path class="road" d="M0,100 H380"/>
+          <path class="road" d="M0,140 H380"/>
+          <path class="road-marking" d="M0,120 H380"/>
+          <!-- Buildings -->
+          <rect x="20" y="30" width="28" height="68" fill="#1e1c19" rx="1"/>
+          <rect x="24" y="36" width="6" height="6" fill="#3a5a72" opacity="0.7"/>
+          <rect x="34" y="36" width="6" height="6" fill="#3a5a72" opacity="0.5"/>
+          <rect x="24" y="48" width="6" height="6" fill="#3a5a72" opacity="0.9"/>
+          <rect x="34" y="48" width="6" height="6" fill="#d4820a" opacity="0.7"/>
+          <rect x="24" y="60" width="6" height="6" fill="#3a5a72" opacity="0.4"/>
+          <rect x="34" y="60" width="6" height="6" fill="#3a5a72" opacity="0.8"/>
+
+          <rect x="55" y="50" width="20" height="48" fill="#2a2825" rx="1"/>
+          <rect x="59" y="56" width="5" height="5" fill="#d4820a" opacity="0.6"/>
+          <rect x="66" y="56" width="5" height="5" fill="#3a5a72" opacity="0.8"/>
+
+          <rect x="300" y="20" width="36" height="78" fill="#1e1c19" rx="1"/>
+          <rect x="305" y="28" width="7" height="7" fill="#3a5a72" opacity="0.7"/>
+          <rect x="316" y="28" width="7" height="7" fill="#d4820a" opacity="0.9"/>
+          <rect x="327" y="28" width="7" height="7" fill="#3a5a72" opacity="0.5"/>
+          <rect x="305" y="42" width="7" height="7" fill="#3a5a72" opacity="0.8"/>
+          <rect x="316" y="42" width="7" height="7" fill="#3a5a72" opacity="0.4"/>
+          <rect x="327" y="42" width="7" height="7" fill="#d4820a" opacity="0.7"/>
+
+          <rect x="345" y="45" width="22" height="53" fill="#2a2825" rx="1"/>
+          <rect x="349" y="52" width="5" height="5" fill="#3a5a72" opacity="0.9"/>
+          <rect x="357" y="52" width="5" height="5" fill="#3a5a72" opacity="0.5"/>
+
+          <!-- Trees -->
+          <circle cx="150" cy="88" r="10" fill="#1a3a25" opacity="0.8"/>
+          <rect x="148" y="94" width="4" height="6" fill="#2a1a0a"/>
+          <circle cx="240" cy="88" r="8" fill="#1a3a25" opacity="0.7"/>
+          <rect x="238" y="93" width="4" height="5" fill="#2a1a0a"/>
+
+          <!-- Moving vehicles on top road -->
+          <g class="vehicle" style="animation-duration:5s;">
+            <rect x="10" y="93" width="22" height="10" fill="#c0392b" rx="2"/>
+            <circle cx="14" cy="104" r="3" fill="#0f0e0c"/>
+            <circle cx="26" cy="104" r="3" fill="#0f0e0c"/>
+          </g>
+          <g class="vehicle vehicle-b" style="animation-duration:4s;">
+            <rect x="10" y="93" width="40" height="12" fill="#3a5a72" rx="2"/>
+            <circle cx="15" cy="106" r="3" fill="#0f0e0c"/>
+            <circle cx="28" cy="106" r="3" fill="#0f0e0c"/>
+            <circle cx="40" cy="106" r="3" fill="#0f0e0c"/>
+          </g>
+
+          <!-- Moving vehicles on bottom road -->
+          <g class="vehicle vehicle-c" style="animation-duration:6s;">
+            <rect x="10" y="133" width="55" height="13" fill="#1a5c3a" rx="2"/>
+            <circle cx="16" cy="147" r="3.5" fill="#0f0e0c"/>
+            <circle cx="30" cy="147" r="3.5" fill="#0f0e0c"/>
+            <circle cx="44" cy="147" r="3.5" fill="#0f0e0c"/>
+            <circle cx="54" cy="147" r="3.5" fill="#0f0e0c"/>
+          </g>
+
+          <!-- Pickup stops -->
+          <circle class="pulse-dot" cx="130" cy="100" r="5" fill="#d4820a" style="animation-delay:-0.5s;"/>
+          <circle class="pulse-dot" cx="230" cy="100" r="5" fill="#d4820a" style="animation-delay:-1.5s;"/>
+          <circle class="pulse-dot" cx="180" cy="140" r="5" fill="#d4820a" style="animation-delay:-1s;"/>
+
+          <!-- Labels -->
+          <text x="130" y="88" text-anchor="middle" fill="#8a8278" font-family="monospace" font-size="7">STOP</text>
+          <text x="230" y="88" text-anchor="middle" fill="#8a8278" font-family="monospace" font-size="7">STOP</text>
+
+          <!-- Legend -->
+          <rect x="10" y="168" width="10" height="6" fill="#c0392b" rx="1"/>
+          <text x="24" y="174" fill="#6a6258" font-family="monospace" font-size="7.5">CAR +8 km/pax</text>
+          <rect x="110" y="168" width="14" height="6" fill="#3a5a72" rx="1"/>
+          <text x="128" y="174" fill="#6a6258" font-family="monospace" font-size="7.5">VAN −0.7 km/pax</text>
+          <rect x="230" y="168" width="18" height="6" fill="#1a5c3a" rx="1"/>
+          <text x="252" y="174" fill="#6a6258" font-family="monospace" font-size="7.5">BUS +0.7 km/pax</text>
+        </svg>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-card">
+          <span class="num">21M</span>
+          <span class="label">City population</span>
+        </div>
+        <div class="stat-card">
+          <span class="num">2,484</span>
+          <span class="label">Riders surveyed</span>
+        </div>
+        <div class="stat-card">
+          <span class="num">74%</span>
+          <span class="label">Would need 2+ modes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span class="scroll-line"></span>
+    Scroll to explore the findings
+  </div>
+</section>
+
+<!-- ── MAIN CONTENT ── -->
+<main>
+
+  <!-- THE PROBLEM -->
+  <section class="section">
+    <span class="section-label">The Problem</span>
+    <h2>Ride-hailing was supposed to fix traffic. It made it worse.</h2>
+    <p>
+      When Uber and Lyft arrived, the promise was seductive: fewer privately owned cars, smarter routing, less congestion. The reality has been almost the opposite. Multiple studies across San Francisco, Chicago, and other cities confirm that ride-hailing increases vehicle kilometers traveled (VKT) — the total distance all vehicles drive — because these services pull passengers away from buses and metros, and add enormous numbers of "deadhead" miles while drivers cruise looking for their next fare.
+    </p>
+    <p>
+      But here's the question that has gone largely unanswered: what about apps that don't send a car exclusively for you — apps designed from the ground up for <em>shared</em> trips? Could a platform that deliberately puts multiple strangers in the same van, travelling the same corridor, change the equation?
+    </p>
+
+    <div class="pull-quote">
+      <p>"There is little evidence if smartphone apps that target shared rides have any influence on reducing traffic levels."</p>
+    </div>
+
+    <p>
+      That gap in the literature is precisely what this paper targets. The researchers studied <strong>Jetty</strong>, a Mexican start-up operating in Mexico City — one of the world's largest and most congested metropolitan areas — that lets commuters book a seat in a shared car, van, or bus through a smartphone app.
+    </p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- THE CITY -->
+  <section class="section">
+    <span class="section-label">The Setting</span>
+    <h2>Mexico City: a megacity with a mobility crisis</h2>
+    <p>
+      The Mexico City metro area is home to 21 million people. On a typical weekday, <strong>34.5 million trips</strong> are made. The modal split reflects enormous complexity: 40% public transit, 32% walking, 19% private car, 5% taxi or app-based ride.
+    </p>
+    <p>
+      Public transit includes a 12-line Metro, BRT (Metrobus), and millions of lightly regulated <em>colectivos</em> — minibuses, microbuses, and vans that account for over 11 million daily trips. These colectivos cover the gaps that formal transit can't, but they vary wildly in quality, safety, and reliability.
+    </p>
+    <p>
+      Into this environment came Jetty (launched 2017). Unlike ride-hailing, Jetty doesn't own vehicles — it connects commuters with licensed operators running fixed routes, primarily serving two major job clusters: Santa Fe (a major business district) and Polanco (an upmarket commercial area). Vehicles pick up passengers at designated stops on a published schedule. Think of it as a premium, app-bookable minibus — more expensive than a colectivo, but far cheaper than a private taxi.
+    </p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- WHO USES JETTY -->
+  <section class="section">
+    <span class="section-label">Who Uses It</span>
+    <h2>The riders: wealthier, more educated, and mostly car owners</h2>
+    <p>
+      The research team conducted a large-scale survey of 2,484 Jetty users. The demographic picture is striking and crucial to interpreting the results.
+    </p>
+
+    <div class="chart-wrap" id="reasonsChart">
+      <div class="chart-title">Top reasons riders choose Jetty (% who mentioned it)</div>
+
+      <div class="bar-row">
+        <div class="bar-name">Booking a seat</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--rust); width:70%">
+            <span class="bar-pct">70%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Security/theft</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--rust); width:68%">
+            <span class="bar-pct">68%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Travel time</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--amber); width:66%">
+            <span class="bar-pct">66%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Reliability</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--amber); width:53%">
+            <span class="bar-pct">53%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Access/egress</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--steel); width:42%">
+            <span class="bar-pct">42%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Vehicle quality</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--steel); width:36%">
+            <span class="bar-pct">36%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Fare</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:var(--steel); width:36%">
+            <span class="bar-pct">36%</span>
+          </div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-name">Anti-harassment <small style="color:var(--muted)">(women: 27%)</small></div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:#8a5a9a; width:16%">
+            <span class="bar-pct">16%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      The most notable finding: <strong>80% of Jetty users have at least one car at home</strong> — nearly double Mexico City's average of 41%. This is crucial. If these commuters would otherwise be driving solo, replacing those trips with a shared van is a genuine win for traffic. The platform is targeting exactly the right demographic: people with cars who are choosing not to drive them.
+    </p>
+    <p>
+      The gender gap in the harassment statistic deserves attention too: 27% of women cited protection from sexual harassment as a reason for using Jetty, versus just 4% of men. This points to a quality-of-life dimension of transport infrastructure that aggregate VKT numbers simply cannot capture.
+    </p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- THE CORE FINDING -->
+  <section class="section">
+    <span class="section-label">The Core Finding</span>
+    <h2>Vehicle type is everything — and the results are surprising</h2>
+    <p>
+      The central question: does Jetty add or remove kilometers from Mexico City's roads? The answer depends almost entirely on <strong>which vehicle you're riding in</strong>. Click each vehicle below to explore why.
+    </p>
+
+    <div class="vehicle-cards">
+      <div class="v-card car" onclick="toggleVehicle('car', this)">
+        <span class="v-icon">🚗</span>
+        <span class="v-name">Shared Car</span>
+        <span class="v-vkt">+7–10</span>
+        <span class="v-sub">km VKT per passenger</span>
+      </div>
+      <div class="v-card van" onclick="toggleVehicle('van', this)">
+        <span class="v-icon">🚐</span>
+        <span class="v-name">Shared Van</span>
+        <span class="v-vkt">−0.2 to −1.1</span>
+        <span class="v-sub">km VKT per passenger</span>
+      </div>
+      <div class="v-card bus" onclick="toggleVehicle('bus', this)">
+        <span class="v-icon">🚌</span>
+        <span class="v-name">Shared Bus</span>
+        <span class="v-vkt">+0.4–1.1</span>
+        <span class="v-sub">km VKT per passenger</span>
+      </div>
+    </div>
+
+    <div id="detail-car" class="v-detail">
+      <strong>Why do shared cars increase traffic?</strong> Even though these are "shared" (3–6 seats), the average demand per run is only around 2 passengers. The car adds nearly as many vehicle-kilometers as a solo driver would, but with only marginally more riders. The VKT ratio — vehicle-km per passenger-km — is 3.5× for cars vs. below 1× for large buses. Cars also predominantly replace trips that were already made in low-occupancy vehicles (taxis, ridesourcing), so the network barely benefits.
+    </div>
+    <div id="detail-van" class="v-detail">
+      <strong>Why do vans actually reduce traffic?</strong> Two factors combine favorably here. First, vans carry 7–10 passengers on average, spreading the vehicle-kilometers across many riders. Second, and more importantly, van users disproportionately <em>replace car trips</em>: 15% would have driven themselves if Jetty weren't available, versus only 10% of bus users. Taking a car off the road and replacing it with a shared van carrying 9 people is a clear win. The VKT savings are modest but real — and importantly, they survive even with 10–20% empty-kilometer assumptions.
+    </div>
+    <div id="detail-bus" class="v-detail">
+      <strong>Why do buses increase VKT despite high capacity?</strong> This is the paper's most counterintuitive result. Buses carry up to 18 passengers per run on average and have excellent VKT-per-passenger ratios. But their riders mostly came from public transit in the first place — 23% replaced a Metro + Microbus combination. They weren't driving; they were already in shared modes. Adding a premium bus to the network doesn't remove cars — it just offers a nicer version of a trip that was already efficient. The extra vehicle-kilometers of the Jetty bus outweigh the marginal improvement in their replaced trips.
+    </div>
+
+    <div class="pull-quote" style="margin-top:2rem;">
+      <p>The key isn't vehicle size. It's who switches — and what they were doing before.</p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- INTERACTIVE EXPLORER -->
+  <section class="section">
+    <span class="section-label">Interactive Explorer</span>
+    <h2>Run your own scenario</h2>
+    <p>The overall VKT effect of a shared-mobility platform depends on several variables the researchers tested through sensitivity analysis. Try changing the assumptions below — just as the researchers did.</p>
+
+    <div class="vkt-explorer">
+      <h3>VKT Impact Estimator</h3>
+      <p class="sub">Based on Tirachini et al. (2020) — Scenario A family</p>
+
+      <div class="explorer-controls">
+        <div class="control-group">
+          <label>Vehicle Mix</label>
+          <select id="vehicleMix" onchange="updateVKT()">
+            <option value="mixed">Mixed fleet (actual Jetty)</option>
+            <option value="vans">All vans</option>
+            <option value="buses">All buses</option>
+            <option value="cars">All cars</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Supply Adjustment</label>
+          <select id="supplyAdj" onchange="updateVKT()">
+            <option value="all">All modes adjust (long-term)</option>
+            <option value="low">Low-occ. modes adjust (medium-term)</option>
+            <option value="car">Only car trips removed (short-term)</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Empty kilometers: <span id="emptyLabel">10%</span></label>
+          <input type="range" id="emptyKm" min="0" max="30" step="10" value="10" oninput="document.getElementById('emptyLabel').textContent=this.value+'%'; updateVKT()">
+          <div class="range-labels"><span>0%</span><span>10%</span><span>20%</span><span>30%</span></div>
+        </div>
+      </div>
+
+      <div class="vkt-result">
+        <div id="vktNumber" class="vkt-number neutral">—</div>
+        <div class="vkt-text">
+          <div id="vktVerdict" class="verdict neutral">Select options above</div>
+          <p id="vktExplanation" class="explanation">Adjust the controls to see how VKT changes under different assumptions. This directly mirrors the sensitivity analysis in the paper.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- KEY FINDINGS -->
+  <section class="section">
+    <span class="section-label">Key Findings</span>
+    <h2>Five things this research tells us</h2>
+
+    <ol class="findings-list">
+      <li>
+        <span class="finding-num">01</span>
+        <div class="finding-text">
+          <strong>Shared-mobility apps can reduce traffic — under the right conditions</strong>
+          <span>Unlike ride-hailing, a well-designed shared platform operating medium-size vans can demonstrably reduce VKT, especially when it draws users away from private cars. This had not been shown empirically before.</span>
+        </div>
+      </li>
+      <li>
+        <span class="finding-num">02</span>
+        <div class="finding-text">
+          <strong>Modal substitution matters more than vehicle capacity</strong>
+          <span>The study shows buses have worse VKT outcomes than vans — not because buses are inefficient, but because bus riders mostly came from public transit. The crucial question is: what were people doing before?</span>
+        </div>
+      </li>
+      <li>
+        <span class="finding-num">03</span>
+        <div class="finding-text">
+          <strong>Empty kilometers are a critical variable</strong>
+          <span>Vehicles deadheading between routes can quickly erase all VKT savings. Efficient depot placement and scheduling optimization aren't just operational details — they determine whether a shared platform is sustainable at all.</span>
+        </div>
+      </li>
+      <li>
+        <span class="finding-num">04</span>
+        <div class="finding-text">
+          <strong>Quality attributes drive adoption as much as price</strong>
+          <span>Jetty costs far more than colectivos, yet users rank guaranteed seating and security higher than fare. This suggests that improving transit quality — not just expanding capacity — could retain and attract riders.</span>
+        </div>
+      </li>
+      <li>
+        <span class="finding-num">05</span>
+        <div class="finding-text">
+          <strong>Equity must be part of the equation</strong>
+          <span>Jetty's users are disproportionately wealthy and educated. Any integration of premium shared-mobility into public transport systems will need explicit subsidy mechanisms to avoid entrenching a two-tier system.</span>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- METHODOLOGY FAQ -->
+  <section class="section">
+    <span class="section-label">Methodology</span>
+    <h2>How was this measured?</h2>
+    <p>The paper uses a carefully designed counterfactual approach. Here are the core methodological questions answered.</p>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          How did researchers calculate VKT savings?
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            The key survey question was: <em>"If Jetty was not available, how would you have made your latest Jetty trip?"</em> Respondents could choose up to three alternative modes, indicating a multi-modal chain. Researchers then used Google Maps routing APIs to calculate the distance of those alternative trips, compared to the distance actually traveled by the Jetty vehicle. VKT for Jetty vehicles was calculated from actual trip data provided by the company, adjusted for passenger car equivalency (PCE) factors — larger vehicles count as more "car equivalents" in traffic models.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          What are the three supply adjustment scenarios?
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            The researchers model three assumptions about how other modes respond to Jetty drawing away riders. <strong>Long-term (all modes adjust):</strong> buses and metros reduce their services proportionally to lost ridership, so the system-wide VKT decreases. <strong>Medium-term (low-occupancy modes only):</strong> only private cars, taxis, and ridesourcing reduce their driving; public transit keeps running the same schedules. <strong>Short-term (only cars):</strong> only private car drivers change behavior; everything else continues as normal. The realistic scenarios sit somewhere between medium and long-term.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          How representative is the sample?
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            14,093 users were invited; 3,091 responded (~23% response rate); 2,484 completed the survey; 2,169 were usable after quality checks. The sample broadly matches Mexico City demographics for age, gender, and household size. However, Jetty's user base — and therefore the sample — over-represents higher-income, highly-educated car owners relative to the general population. This is acknowledged as a limitation, but also reflects Jetty's actual market: the platform is genuinely targeting people with cars.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Why is the VKT result not a single number?
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Several key inputs are genuinely unknown — for example, the average occupancy of Mexico City colectivos, or the exact percentage of empty kilometers Jetty vehicles travel between routes. Rather than picking arbitrary defaults, the researchers performed sensitivity analyses: they ran the calculation with high, medium, and low occupancy assumptions, and with 0–30% empty-kilometer assumptions. The result is a range of outcomes that honestly reflects this uncertainty. The paper's contribution is to identify <em>the conditions under which</em> VKT savings occur, not to claim a single definitive number.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-block section">
+    <h2>Want the full picture?</h2>
+    <p>This explainer covers the headline findings. The full paper includes detailed VKT calculations by route, a complete sensitivity analysis matrix, access/egress mode breakdowns, and a rich discussion of policy implications for integrating platforms like Jetty into formal public transit systems.</p>
+    <a href="https://doi.org/10.1016/j.trc.2020.102707" target="_blank" class="cta-btn">Read the Full Paper →</a>
+    <p class="cta-meta">Tirachini et al. (2020) · Transportation Research Part C · Vol. 117 · DOI: 10.1016/j.trc.2020.102707</p>
+  </div>
+
+</main>
+
+<script>
+// ── READING PROGRESS ──
+window.addEventListener('scroll', () => {
+  const total = document.body.scrollHeight - window.innerHeight;
+  const pct = Math.min(100, (window.scrollY / total) * 100);
+  document.getElementById('readingBar').style.width = pct + '%';
+});
+
+// ── INTERSECTION OBSERVER for sections ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+// ── BAR CHART ANIMATION ──
+const chartObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.bar-fill').forEach((b, i) => {
+        setTimeout(() => b.classList.add('animated'), i * 120);
+      });
+      chartObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const chart = document.getElementById('reasonsChart');
+if (chart) chartObserver.observe(chart);
+
+// ── VEHICLE CARDS ──
+function toggleVehicle(type, el) {
+  // remove active from all cards
+  document.querySelectorAll('.v-card').forEach(c => c.classList.remove('active'));
+  // hide all details
+  ['car','van','bus'].forEach(t => {
+    const d = document.getElementById('detail-' + t);
+    if (d) d.classList.remove('visible');
+  });
+  // show selected
+  el.classList.add('active');
+  const detail = document.getElementById('detail-' + type);
+  if (detail) detail.classList.add('visible');
+}
+
+// ── ACCORDION ──
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const body = item.querySelector('.acc-body');
+  const isOpen = item.classList.contains('open');
+
+  // close all
+  document.querySelectorAll('.acc-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.acc-body').style.maxHeight = '0';
+  });
+
+  if (!isOpen) {
+    item.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+// ── VKT EXPLORER ──
+// Lookup table: [vehicleMix][supplyAdj][emptyKm%] → [value, direction, explanation]
+const vktData = {
+  mixed: {
+    all:  { 0: [-14, 'neg', 'All modes reduce services in response. Jetty removes more VKT than it adds — a clear win for the city.'],
+            10: [-9,  'neg', 'Even with some empty kilometers, all-mode adjustment means net traffic reduction.'],
+            20: [-4,  'neg', 'Savings shrink but remain positive. The platform is still reducing road traffic.'],
+            30: [0,   'neu', 'At 30% empty km, savings evaporate to near zero under long-term adjustment.'] },
+    low:  { 0: [-3,  'neg', 'Low-occ. modes adjust. Zero empty km means modest VKT savings — achievable with good routing.'],
+            10: [2,   'pos', 'Small increase. 10% empty km tips the balance: public transit keeps running despite fewer riders.'],
+            20: [8,   'pos', 'Moderate VKT increase. Empty kilometers are a significant penalty.'],
+            30: [14,  'pos', 'Large increase. High empty km + no PT adjustment means Jetty is adding traffic.'] },
+    car:  { 0: [29,  'pos', 'Only private car trips are saved. Every other mode keeps running. Jetty adds major VKT.'],
+            10: [39,  'pos', 'Worse still with 10% empty km. Short-term scenarios are clearly unfavorable.'],
+            20: [50,  'pos', 'VKT up 50%. This is the worst realistic scenario.'],
+            30: [60,  'pos', 'Near-catastrophic in the short run if empty km are high and only car trips are displaced.'] }
+  },
+  vans: {
+    all:  { 0: [-20, 'neg', 'All-van fleet with all modes adjusting: impressive VKT reduction. Vans attract more car users.'],
+            10: [-14, 'neg', 'Strong savings persist with 10% empty km.'],
+            20: [-8,  'neg', 'Still net positive — vans are robust to moderate empty-km rates.'],
+            30: [-2,  'neg', 'Even at 30% empty km, an all-van fleet under long-term assumptions saves VKT.'] },
+    low:  { 0: [-12, 'neg', 'Vans excel here: their high car-replacement rate drives real savings.'],
+            10: [-7,  'neg', 'Savings persist — vans are the most favorable vehicle type.'],
+            20: [-1,  'neg', 'Just barely reduces VKT with 20% empty km.'],
+            30: [4,   'pos', 'High empty km finally tips vans into adding traffic, but only marginally.'] },
+    car:  { 0: [15,  'pos', 'Even an all-van fleet adds traffic if only car trips are credited in the short term.'],
+            10: [22,  'pos', 'Short-term logic still dominates — transit keeps running regardless.'],
+            20: [30,  'pos', 'Vehicle type helps less than the supply-adjustment assumption.'],
+            30: [38,  'pos', 'Short-term scenario is unfavorable regardless of vehicle mix.'] }
+  },
+  buses: {
+    all:  { 0: [-8,  'neg', 'Buses with all-mode adjustment: still reduces VKT, but less than vans.'],
+            10: [-3,  'neg', 'Marginal savings with 10% empty km.'],
+            20: [2,   'pos', 'Flips to a small increase. Buses are less resilient to empty km.'],
+            30: [7,   'pos', 'Moderate increase. Bus users mostly came from public transit.'] },
+    low:  { 0: [4,   'pos', 'Bus users disproportionately replace PT trips, so low-occ. adjustment saves little.'],
+            10: [10,  'pos', 'Clear increase. Bus modal substitution does not align with where the savings are.'],
+            20: [16,  'pos', 'Buses are the least favorable vehicle for VKT under medium-term assumptions.'],
+            30: [22,  'pos', 'Large increase.'] },
+    car:  { 0: [35,  'pos', 'Worst combination: buses + short-term only = large VKT increase.'],
+            10: [44,  'pos', 'Very high VKT increase.'],
+            20: [53,  'pos', 'Over 50% increase.'],
+            30: [62,  'pos', 'Extreme scenario.'] }
+  },
+  cars: {
+    all:  { 0: [12,  'pos', 'Small shared cars rarely reduce VKT — even with long-term adjustment. Occupancy too low.'],
+            10: [18,  'pos', 'Increases. Car-type Jetty vehicles do not carry enough passengers.'],
+            20: [24,  'pos', 'Clear increase across all scenarios for small cars.'],
+            30: [30,  'pos', 'VKT up significantly.'] },
+    low:  { 0: [25,  'pos', 'Small cars are the worst vehicle type under any supply scenario.'],
+            10: [33,  'pos', 'Substantial increase.'],
+            20: [41,  'pos', 'Large increase.'],
+            30: [49,  'pos', 'Near 50% increase.'] },
+    car:  { 0: [50,  'pos', 'Small Jetty cars replacing only private cars: the worst possible scenario.'],
+            10: [60,  'pos', 'This combination is counterproductive.'],
+            20: [70,  'pos', 'Extremely high VKT.'],
+            30: [80,  'pos', 'Completely unfavorable.'] }
+  }
+};
+
+function updateVKT() {
+  const mix   = document.getElementById('vehicleMix').value;
+  const adj   = document.getElementById('supplyAdj').value;
+  const empty = parseInt(document.getElementById('emptyKm').value);
+
+  const data = vktData[mix][adj][empty];
+  const [val, dir, text] = data;
+
+  const numEl = document.getElementById('vktNumber');
+  const verdEl = document.getElementById('vktVerdict');
+  const expEl = document.getElementById('vktExplanation');
+
+  const sign = val > 0 ? '+' : '';
+  numEl.textContent = sign + val + '%';
+  numEl.className = 'vkt-number ' + (dir === 'neg' ? 'negative' : dir === 'pos' ? 'positive' : 'neutral');
+
+  verdEl.className = 'verdict ' + (dir === 'neg' ? 'negative' : dir === 'pos' ? 'positive' : 'neutral');
+  verdEl.textContent = dir === 'neg' ? '▼ VKT Reduced' : dir === 'pos' ? '▲ VKT Increased' : '→ Neutral Effect';
+
+  expEl.textContent = text;
+}
+
+// init
+updateVKT();
+</script>
+</body>
+</html>

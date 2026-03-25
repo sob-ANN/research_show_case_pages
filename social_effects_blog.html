@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why People Really Use Pooled Rides | Research Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Albert+Sans:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #1a1a2e;
+    --plum: #4a1942;
+    --rose: #c0415c;
+    --blush: #f2e8ea;
+    --sage: #2d6a4f;
+    --wheat: #fdf6ee;
+    --border: #e8dfe8;
+    --muted: #6b5b6b;
+    --neutral: #9a8a9a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Albert Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .progress {
+    position: fixed; top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--plum), var(--rose));
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--plum);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Woven texture overlay */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 10px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+    pointer-events: none;
+  }
+
+  .hero-accent {
+    position: absolute;
+    top: 0; right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 40%, rgba(192,65,92,0.12) 100%);
+    pointer-events: none;
+  }
+
+  .hero-nav {
+    position: relative; z-index: 2;
+    padding: 1.75rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .nav-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .nav-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #f9c0cc;
+    border: 1px solid rgba(249,192,204,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .hero-body {
+    position: relative; z-index: 2;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 4rem;
+    align-items: center;
+    padding: 4rem 3rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #f9c0cc;
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  h1 em { font-style: italic; color: #f9c0cc; }
+
+  .hero-deck {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 44ch;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  .hero-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.08em;
+    line-height: 2;
+  }
+
+  /* Hero right — quote mosaic */
+  .quote-mosaic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .mosaic-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    margin-bottom: 0.25rem;
+  }
+
+  .quote-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .quote-card:hover {
+    background: rgba(255,255,255,0.09);
+    transform: translateX(3px);
+  }
+
+  .quote-card.positive { border-left-color: #f9c0cc; }
+  .quote-card.feature  { border-left-color: rgba(255,255,255,0.25); }
+  .quote-card.concern  { border-left-color: rgba(192,65,92,0.5); }
+
+  .quote-text {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.75);
+    display: block;
+    margin-bottom: 0.3rem;
+    line-height: 1.5;
+  }
+
+  .quote-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.08em;
+  }
+
+  .hero-scroll {
+    position: relative; z-index: 2;
+    padding: 1.5rem 3rem 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .scroll-line { width: 36px; height: 1px; background: rgba(255,255,255,0.15); animation: sl 2s ease-in-out infinite; }
+  @keyframes sl { 0%,100%{width:36px} 50%{width:60px} }
+
+  /* ── MAIN ── */
+  main { max-width: 780px; margin: 0 auto; padding: 5rem 2rem; }
+
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .section { margin-bottom: 5rem; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rose);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .section-label::before { content:''; width:20px; height:2px; background:var(--rose); flex-shrink:0; }
+
+  h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(1.55rem, 2.8vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  p { color: #2a2040; margin-bottom: 1.25rem; font-size: 1.02rem; }
+
+  .pull-quote {
+    margin: 2.5rem 0;
+    padding: 1.5rem 1.75rem 1.5rem 2rem;
+    border-left: 3px solid var(--rose);
+    background: var(--blush);
+  }
+
+  .pull-quote p {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--plum);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ── REASONS BAR CHART ── */
+  .reasons-chart {
+    margin: 2rem 0;
+    background: var(--wheat);
+    border-radius: 4px;
+    padding: 1.75rem;
+  }
+
+  .chart-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .reason-row {
+    display: grid;
+    grid-template-columns: 185px 1fr 50px;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .reason-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.67rem;
+    color: var(--ink);
+  }
+
+  .reason-track {
+    height: 11px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .reason-fill {
+    height: 100%;
+    border-radius: 5px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reason-fill.animated { transform: scaleX(1); }
+
+  .reason-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.67rem;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .reason-divider {
+    grid-column: 1 / -1;
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 0.4rem 0;
+  }
+
+  .chart-footnote {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--neutral);
+    margin-top: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── GENDER FINDER ── */
+  .gender-explorer {
+    background: var(--plum);
+    border-radius: 6px;
+    padding: 2rem;
+    margin: 2.5rem 0;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .gender-explorer h3 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.05rem;
+    color: #fff;
+    margin-bottom: 0.35rem;
+  }
+
+  .gender-explorer .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.06em;
+    margin-bottom: 1.75rem;
+  }
+
+  .gender-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .g-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.5rem 1.1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.5);
+    transition: all 0.25s ease;
+  }
+
+  .g-tab.active, .g-tab:hover {
+    background: rgba(249,192,204,0.15);
+    border-color: rgba(249,192,204,0.4);
+    color: #f9c0cc;
+  }
+
+  .g-panel { display: none; }
+  .g-panel.active { display: block; }
+
+  .g-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 1rem;
+  }
+
+  .g-row:last-child { border-bottom: none; }
+
+  .g-factor {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.7);
+    flex: 1;
+  }
+
+  .g-effect {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .g-effect.pos  { background: rgba(45,106,79,0.3); color: #7bc8a4; }
+  .g-effect.neg  { background: rgba(192,65,92,0.25); color: #f9a0b0; }
+  .g-effect.neut { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+
+  /* ── ACTIVITIES ── */
+  .activity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin: 1.75rem 0;
+  }
+
+  .activity-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .activity-card:hover {
+    border-color: var(--rose);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74,25,66,0.07);
+  }
+
+  .activity-icon { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
+
+  .activity-name {
+    font-family: 'Albert Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .activity-pct {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--rose);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .activity-desc {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* ── SENTIMENT BLOCK ── */
+  .sentiment-block {
+    background: var(--wheat);
+    border-radius: 4px;
+    padding: 1.75rem;
+    margin: 2rem 0;
+  }
+
+  .sentiment-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .sentiment-score-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .score-dial {
+    flex-shrink: 0;
+    width: 80px;
+    text-align: center;
+  }
+
+  .score-num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--sage);
+    line-height: 1;
+    display: block;
+  }
+
+  .score-caption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .score-breakdown { flex: 1; }
+
+  .score-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .score-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    width: 90px;
+    flex-shrink: 0;
+    color: var(--ink);
+  }
+
+  .score-bar-wrap { flex: 1; height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 4px; transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(0.16,1,0.3,1); }
+  .score-bar.animated { transform: scaleX(1); }
+
+  .score-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── WORD CLOUD DISPLAY ── */
+  .word-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.25rem 0;
+    align-items: center;
+  }
+
+  .word-chip {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    border-radius: 3px;
+    padding: 0.25rem 0.7rem;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+
+  .word-chip:hover { transform: scale(1.08); }
+
+  /* ── ACCORDION ── */
+  .accordion { margin: 1.5rem 0; }
+  .acc-item { border-top: 1px solid var(--border); }
+  .acc-trigger {
+    width: 100%; background: none; border: none;
+    padding: 1.1rem 0;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+    font-family: 'Albert Sans', sans-serif; font-size: 0.95rem; font-weight: 400;
+    color: var(--ink); text-align: left; gap: 1rem;
+  }
+  .acc-trigger:hover { color: var(--rose); }
+  .acc-icon { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; color: var(--neutral); transition: transform 0.3s ease; flex-shrink: 0; }
+  .acc-item.open .acc-icon { transform: rotate(45deg); color: var(--rose); }
+  .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .acc-body-inner { padding: 0 0 1.25rem; font-size: 0.92rem; color: #4a3a50; line-height: 1.7; }
+
+  /* ── FINDINGS ── */
+  .finding { display: flex; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .finding:last-child { border-bottom: none; }
+  .finding-n { font-family: 'Libre Baskerville', serif; font-size: 2.5rem; font-weight: 700; color: var(--border); line-height: 1; flex-shrink: 0; width: 2.75rem; text-align: right; }
+  .finding-body strong { font-family: 'Albert Sans', sans-serif; font-weight: 500; font-size: 0.97rem; color: var(--ink); display: block; margin-bottom: 0.35rem; }
+  .finding-body p { font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.65; }
+
+  /* ── DIVIDER ── */
+  .divider { display: flex; align-items: center; gap: 1rem; margin: 4rem 0; }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .divider span { font-family:'IBM Plex Mono',monospace; font-size:0.6rem; letter-spacing:0.2em; color:var(--neutral); }
+
+  /* ── CTA ── */
+  .cta-block {
+    background: linear-gradient(135deg, var(--plum) 0%, #3a1432 100%);
+    color: #fff;
+    padding: 3rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-block::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 10px),
+                repeating-linear-gradient(-45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 10px);
+  }
+
+  .cta-block h2 { color: #fff; position: relative; z-index: 1; margin-bottom: 0.75rem; }
+  .cta-block p  { color: rgba(255,255,255,0.5); max-width: 50ch; margin: 0 auto 2rem; position: relative; z-index: 1; font-size: 0.95rem; }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--rose);
+    color: #fff;
+    padding: 0.9rem 2.25rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    position: relative; z-index: 1;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .cta-btn:hover { background: #a83050; transform: translateY(-2px); }
+
+  .cta-meta { margin-top: 1.25rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: rgba(255,255,255,0.18); letter-spacing: 0.1em; position: relative; z-index: 1; }
+
+  @media (max-width: 760px) {
+    .hero-body { grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 1.5rem 2rem; }
+    .hero-nav { padding: 1.25rem 1.5rem; }
+    main { padding: 3rem 1.25rem; }
+    .activity-grid { grid-template-columns: 1fr; }
+    .reason-row { grid-template-columns: 130px 1fr 42px; }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progressBar"></div>
+
+<section class="hero">
+  <div class="hero-accent"></div>
+
+  <nav class="hero-nav">
+    <span class="nav-tag">Travel Behaviour and Society · 2025</span>
+    <span class="nav-badge">Open Access</span>
+  </nav>
+
+  <div class="hero-body">
+    <div class="hero-left">
+      <span class="hero-kicker">Research Explainer · Social Effects &amp; Equity</span>
+      <h1>Why do people really use pooled rides? The answer is about <em>safety</em> as much as speed.</h1>
+      <p class="hero-deck">
+        The biggest study yet on what drives people to use app-based pooled rides in Mexico City surfaces a finding that goes far beyond transport planning: for many women, pooling a ride is a rational response to a genuinely unsafe public transit system.
+      </p>
+      <div class="hero-meta">
+        Abouelela · Tirachini · Chaniotakis · Antoniou<br>
+        TU Munich · U. Twente · U. Chile · UCL London<br>
+        N = 2,484 users · Mexico City · 96,317 trip records · Sentiment analysis
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="mosaic-label">User voices — open survey responses</div>
+      <div class="quote-mosaic">
+        <div class="quote-card positive">
+          <span class="quote-text">"The service is excellent and convenient. The drivers are always attentive and provide excellent service."</span>
+          <span class="quote-meta">Positive respondent · sentiment score: +8</span>
+        </div>
+        <div class="quote-card feature">
+          <span class="quote-text">"Safe and reliable. Please expand the routes — PT coverage in the north is very limited."</span>
+          <span class="quote-meta">Regular user · route expansion request</span>
+        </div>
+        <div class="quote-card concern">
+          <span class="quote-text">"The biggest issue is the unclear app interface. However, once you are in the car, the service is very good."</span>
+          <span class="quote-meta">Critical respondent · sentiment score: −2</span>
+        </div>
+        <div class="quote-card positive">
+          <span class="quote-text">"Given the cost, convenience, and comfort traveling between home and work, I plan to continue even if my company withdraws support."</span>
+          <span class="quote-meta">Loyal user · willingness to pay own cost</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<main>
+
+  <section class="section reveal">
+    <div class="section-label">The Question</div>
+    <h2>What actually makes someone choose a pooled ride over all the alternatives?</h2>
+    <p>
+      The standard transport economics answer to "why do people use a mode?" is: because it is faster, cheaper, or more convenient than the alternative. These factors matter for pooled rides too. But this paper — the broadest analysis yet of pooled-ride users in a developing megacity — finds that the picture is considerably richer.
+    </p>
+    <p>
+      Mexico City's public transit system carries half the city's 34 million daily trips. It is also, by independent assessments, one of the most dangerous urban transit environments in the world. Ninety percent of PT users report feeling unsafe. Twenty-three percent of women avoid PT entirely for personal security reasons. Sexual harassment is frequent across all modes, from metro to minibuses to BRT.
+    </p>
+    <p>
+      Into this environment, Jetty offers something qualitatively different: a seat you book in advance, a vehicle you can track in real time, a driver with a work contract. For many users — especially women — this is not merely a convenience upgrade. It is the difference between a trip that feels manageable and one that feels threatening.
+    </p>
+
+    <div class="pull-quote">
+      <p>Women respondents reported using the service for security against harassment at six times the rate of men — and they still pay the same price, despite earning on average 21% less.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Top Reasons to Use Jetty</div>
+    <h2>What users say — and what the models confirm</h2>
+    <p>Users could cite up to six reasons from a list of 14. The top four — chosen by more than half of all respondents — tell a coherent story about a city where formal transit has quality and safety deficits.</p>
+
+    <div class="reasons-chart" id="reasonsChart">
+      <div class="chart-title">Reasons to use Jetty (% of 2,484 respondents who cited each reason)</div>
+
+      <div class="reason-row">
+        <div class="reason-label">Booking of seat</div>
+        <div class="reason-track"><div class="reason-fill" style="width:69%; background:var(--plum);"></div></div>
+        <div class="reason-pct" style="color:var(--plum)">69%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Security against theft</div>
+        <div class="reason-track"><div class="reason-fill" style="width:67%; background:var(--plum);"></div></div>
+        <div class="reason-pct" style="color:var(--plum)">67%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Travel time saving</div>
+        <div class="reason-track"><div class="reason-fill" style="width:66%; background:var(--plum);"></div></div>
+        <div class="reason-pct" style="color:var(--plum)">66%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Travel time reliability</div>
+        <div class="reason-track"><div class="reason-fill" style="width:53%; background:var(--rose);"></div></div>
+        <div class="reason-pct" style="color:var(--rose)">53%</div>
+      </div>
+      <hr class="reason-divider"/>
+      <div class="reason-row">
+        <div class="reason-label">Access/Egress time</div>
+        <div class="reason-track"><div class="reason-fill" style="width:42%; background:var(--neutral);"></div></div>
+        <div class="reason-pct" style="color:var(--neutral)">42%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Vehicle quality</div>
+        <div class="reason-track"><div class="reason-fill" style="width:36%; background:var(--neutral);"></div></div>
+        <div class="reason-pct" style="color:var(--neutral)">36%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Fare</div>
+        <div class="reason-track"><div class="reason-fill" style="width:36%; background:var(--neutral);"></div></div>
+        <div class="reason-pct" style="color:var(--neutral)">36%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Security vs. harassment</div>
+        <div class="reason-track"><div class="reason-fill" style="width:16%; background:var(--rose);"></div></div>
+        <div class="reason-pct" style="color:var(--rose)">16%</div>
+      </div>
+      <div class="reason-row">
+        <div class="reason-label">Avoid parking problems</div>
+        <div class="reason-track"><div class="reason-fill" style="width:11%; background:var(--neutral);"></div></div>
+        <div class="reason-pct" style="color:var(--neutral)">11%</div>
+      </div>
+
+      <p class="chart-footnote">The 16% who cite harassment security represent an absolute signal: women reported this reason at 6× the male rate. The structural gender gap this reflects is the paper's central finding.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Interactive Explorer</div>
+    <h2>Gender, demographics, and what drives each choice</h2>
+    <p>The models (binary logit and hybrid choice) reveal how demographic and trip characteristics shape why users choose Jetty, and what they do on board. Explore the findings by selecting a factor below.</p>
+
+    <div class="gender-explorer">
+      <h3>Model-Based Factors Explorer</h3>
+      <p class="sub">BINARY LOGIT &amp; ICLV MODELS — ABOUELELA ET AL. 2025, TABLES 5–7</p>
+
+      <div class="gender-tabs">
+        <button class="g-tab active" onclick="switchGTab('seat', this)">Booking a seat</button>
+        <button class="g-tab" onclick="switchGTab('theft', this)">Security / theft</button>
+        <button class="g-tab" onclick="switchGTab('time', this)">Travel time</button>
+        <button class="g-tab" onclick="switchGTab('sleep', this)">Sleeping on board</button>
+        <button class="g-tab" onclick="switchGTab('phone', this)">Using smartphone</button>
+      </div>
+
+      <div class="g-panel active" id="tab-seat">
+        <div class="g-row"><div class="g-factor">Women vs men</div><div class="g-effect pos">↑ More likely to cite seat booking</div></div>
+        <div class="g-row"><div class="g-factor">Bachelor/professional degree vs others</div><div class="g-effect neg">↓ Less likely to cite seat booking</div></div>
+        <div class="g-row"><div class="g-factor">Masters or PhD vs others</div><div class="g-effect neg">↓ Less likely to cite seat booking</div></div>
+        <div class="g-row"><div class="g-factor">Full-time employed vs other</div><div class="g-effect pos">↑ More likely — schedule rigidity increases value of guaranteed seat</div></div>
+        <div class="g-row"><div class="g-factor">Access by walking vs other modes</div><div class="g-effect neg">↓ Less likely — walkers may have shorter, easier trips</div></div>
+        <div class="g-row"><div class="g-factor">Complexity of replaced trip (more modes)</div><div class="g-effect pos">↑ More likely — complex trips make a guaranteed seat more valuable</div></div>
+      </div>
+
+      <div class="g-panel" id="tab-theft">
+        <div class="g-row"><div class="g-factor">Women vs men</div><div class="g-effect pos">↑ Significantly more likely to cite theft security</div></div>
+        <div class="g-row"><div class="g-factor">Age 36–45 vs 18–25</div><div class="g-effect pos">↑ Older users prioritise personal security more</div></div>
+        <div class="g-row"><div class="g-factor">Age 46+ vs 18–25</div><div class="g-effect pos">↑ Strongest age effect for security concern</div></div>
+        <div class="g-row"><div class="g-factor">Higher education (bachelor+)</div><div class="g-effect pos">↑ More likely to cite theft security</div></div>
+        <div class="g-row"><div class="g-factor">Driving licence availability</div><div class="g-effect neg">↓ Having a licence reduces probability — car option reduces exposure to PT crime</div></div>
+        <div class="g-row"><div class="g-factor">Access by walking vs other modes</div><div class="g-effect neg">↓ Less likely — possibly because walking access implies shorter exposure to PT environments</div></div>
+        <div class="g-row"><div class="g-factor">Complexity of replaced trip (more modes)</div><div class="g-effect pos">↑ Multi-modal trips mean more crime exposure, so security valued more</div></div>
+      </div>
+
+      <div class="g-panel" id="tab-time">
+        <div class="g-row"><div class="g-factor">Latent variable: frequent PT user</div><div class="g-effect pos">↑ PT users value time-saving more — Jetty is faster than their complex PT routes</div></div>
+        <div class="g-row"><div class="g-factor">Age 36–45 vs 18–25</div><div class="g-effect neg">↓ Older users less likely to cite time saving</div></div>
+        <div class="g-row"><div class="g-factor">Household size 5+ vs 1–2</div><div class="g-effect pos">↑ Large households — more constraints on travel time</div></div>
+        <div class="g-row"><div class="g-factor">Access by walking</div><div class="g-effect neg">↓ Walkers less likely to cite time — short access means the overall trip is already simpler</div></div>
+        <div class="g-row"><div class="g-factor">Access time duration</div><div class="g-effect neg">↓ Longer walk to pickup reduces perceived time benefit</div></div>
+        <div class="g-row"><div class="g-factor">Complexity of replaced trip (more modes)</div><div class="g-effect pos">↑ Biggest effect — replacing 3-mode trips makes Jetty time savings enormous</div></div>
+      </div>
+
+      <div class="g-panel" id="tab-sleep">
+        <div class="g-row"><div class="g-factor">Women vs men</div><div class="g-effect pos">↑ Women significantly more likely to sleep — reflects sense of safety not available in PT</div></div>
+        <div class="g-row"><div class="g-factor">Full-time employed vs other</div><div class="g-effect pos">↑ Fatigue from early-morning commutes drives sleeping behaviour</div></div>
+        <div class="g-row"><div class="g-factor">Age 36–45 vs 18–25</div><div class="g-effect neg">↓ Older riders less likely to sleep</div></div>
+        <div class="g-row"><div class="g-factor">Age 46+ vs 18–25</div><div class="g-effect neg">↓ Strongest age reduction in sleeping probability</div></div>
+        <div class="g-row"><div class="g-factor">Driving licence (yes vs no)</div><div class="g-effect neg">↓ Drivers less inclined to sleep — different comfort baseline</div></div>
+        <div class="g-row"><div class="g-factor">Latent variable: frequent PT user</div><div class="g-effect pos">↑ PT users more likely to sleep — safety contrast is most acute for them</div></div>
+        <div class="g-row"><div class="g-factor">Complexity of replaced trip (more modes)</div><div class="g-effect pos">↑ Bigger relief from trip complexity → more likely to relax and sleep</div></div>
+      </div>
+
+      <div class="g-panel" id="tab-phone">
+        <div class="g-row"><div class="g-factor">Age 36–45 vs 18–25</div><div class="g-effect neg">↓ Older riders less likely to use smartphone</div></div>
+        <div class="g-row"><div class="g-factor">Age 46+ vs 18–25</div><div class="g-effect neg">↓ Strongest age reduction — generational smartphone usage difference</div></div>
+        <div class="g-row"><div class="g-factor">Driving licence (yes vs no)</div><div class="g-effect neg">↓ Drivers less likely to use phone — possibly use cars instead sometimes</div></div>
+        <div class="g-row"><div class="g-factor">Latent variable: frequent PT user</div><div class="g-effect neg">↓ Frequent PT users less likely to use smartphone (safety concern in PT may carry over)</div></div>
+        <div class="g-row"><div class="g-factor">Complexity of replaced trip (more modes)</div><div class="g-effect pos">↑ More modes replaced → more convenience gain → more smartphone use</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">On-Board Experience</div>
+    <h2>What people do while riding — a window into perceived comfort and safety</h2>
+    <p>What passengers do on board is not just a curiosity — it is evidence of their perceived comfort and security level. In a vehicle you feel unsafe in, you do not close your eyes. You do not read. You stay alert.</p>
+
+    <div class="activity-grid">
+      <div class="activity-card">
+        <span class="activity-icon">😴</span>
+        <span class="activity-name">Sleeping</span>
+        <span class="activity-pct">74%</span>
+        <p class="activity-desc">The most revealing finding. Women are significantly more likely to sleep than men — the model links this directly to the safety of the service relative to CDMX public transit. People do not sleep in places they feel threatened.</p>
+      </div>
+      <div class="activity-card">
+        <span class="activity-icon">📱</span>
+        <span class="activity-name">Using smartphone</span>
+        <span class="activity-pct">71%</span>
+        <p class="activity-desc">Productivity and entertainment on a 46-minute average journey. Using a phone requires physical safety (risk of theft) and cognitive ease. That 71% do this comfortably in a shared vehicle in Mexico City is itself a data point about perceived security.</p>
+      </div>
+      <div class="activity-card">
+        <span class="activity-icon">🪟</span>
+        <span class="activity-name">Looking out of window</span>
+        <span class="activity-pct">34%</span>
+        <p class="activity-desc">A restful, passive activity consistent with the early-morning, long-distance commute profile. 75% of trips are under 49 minutes; these are dedicated commute journeys where decompression is valued.</p>
+      </div>
+      <div class="activity-card">
+        <span class="activity-icon">📖</span>
+        <span class="activity-name">Reading for pleasure</span>
+        <span class="activity-pct">23%</span>
+        <p class="activity-desc">Requires concentration and a stable, comfortable environment. The fact that nearly 1 in 4 riders reads for pleasure contrasts sharply with the crowded, standing-room-only reality of many colectivos.</p>
+      </div>
+      <div class="activity-card">
+        <span class="activity-icon">💼</span>
+        <span class="activity-name">Working</span>
+        <span class="activity-pct">14%</span>
+        <p class="activity-desc">Reclaiming commute time as productive work time. Combined with studying (8%), approximately 1 in 5 riders turns the journey into useful working or learning time — something impossible while driving.</p>
+      </div>
+      <div class="activity-card">
+        <span class="activity-icon">💬</span>
+        <span class="activity-name">Talking to passengers</span>
+        <span class="activity-pct">6%</span>
+        <p class="activity-desc">The lowest-scored activity. Pooled rides are not primarily a social experience. People value the convenience and safety — not the company. This finding aligns with similar results from Europe and North America on ride-pooling socialization.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Sentiment Analysis</div>
+    <h2>What 864 users said in their own words</h2>
+    <p>An optional open-ended question generated 864 Spanish-language responses. Using N-gram analysis and AFINN lexicon scoring, the researchers extracted patterns invisible to the closed survey questions.</p>
+
+    <div class="sentiment-block" id="sentimentBlock">
+      <div class="sentiment-title">AFINN lexicon-based sentiment scores (scale: −5 to +5 per word)</div>
+      <div class="sentiment-score-row">
+        <div class="score-dial">
+          <span class="score-num">+2.87</span>
+          <span class="score-caption">Overall avg.</span>
+        </div>
+        <div class="score-breakdown">
+          <div class="score-item">
+            <div class="score-label">All users</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:57.4%; background:var(--sage);"></div></div>
+            <div class="score-val">+2.87</div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Women</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:70.2%; background:var(--rose);"></div></div>
+            <div class="score-val">+3.51</div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Men</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:42.8%; background:var(--plum);"></div></div>
+            <div class="score-val">+2.14</div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Bus users</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:70.4%; background:var(--sage);"></div></div>
+            <div class="score-val">+3.52</div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Van users</div>
+            <div class="score-bar-wrap"><div class="score-bar" style="width:60.6%; background:var(--sage);"></div></div>
+            <div class="score-val">+3.03</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      Women's scores are statistically significantly higher than men's (p = 0.006). Bus users score higher than van users — possibly because buses have more personal space at lower cost (40% seat utilisation vs. 60% for vans). The gender gap in sentiment mirrors the gender gap in security reasons: women have more to gain from Jetty, because they have more to lose in the absence of it.
+    </p>
+
+    <p>The N-gram word network surfaced key themes that closed survey questions could not capture. The most frequent word associations:</p>
+
+    <div class="word-cloud">
+      <span class="word-chip" style="font-size:1.3rem; background:rgba(74,25,66,0.1); color:var(--plum);">excellent service</span>
+      <span class="word-chip" style="font-size:1.1rem; background:rgba(192,65,92,0.08); color:var(--rose);">safe · reliable</span>
+      <span class="word-chip" style="font-size:1.15rem; background:rgba(74,25,66,0.08); color:var(--plum);">service · convenient</span>
+      <span class="word-chip" style="font-size:0.95rem; background:rgba(45,106,79,0.1); color:var(--sage);">expand · routes</span>
+      <span class="word-chip" style="font-size:0.9rem; background:rgba(192,65,92,0.07); color:var(--rose);">friendly drivers</span>
+      <span class="word-chip" style="font-size:0.85rem; background:rgba(0,0,0,0.05); color:var(--muted);">lower · cost</span>
+      <span class="word-chip" style="font-size:0.82rem; background:rgba(0,0,0,0.05); color:var(--muted);">uncomfortable seats</span>
+      <span class="word-chip" style="font-size:0.8rem; background:rgba(0,0,0,0.05); color:var(--muted);">bad experience</span>
+    </div>
+
+    <p>
+      Requests to expand routes dominated the geographic comments — most concentrated in the north of the city, where PT coverage is worst. This represents both a satisfaction signal (people want more of it) and an equity signal (the areas with greatest need are where coverage is thinnest).
+    </p>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">What's Unique</div>
+    <h2>How Jetty differs from the global pooled-ride profile — and what that teaches us</h2>
+
+    <div class="accordion">
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Women are more frequent users than men — rare in pooled-ride research
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            Most shared mobility studies worldwide find men as the majority or most frequent users. In this sample, women use Jetty more frequently than men: 6.88 trips/month versus 5.82 for men, a statistically significant difference (p = 0.003). The authors suggest this is primarily driven by the safety premium the service offers relative to CDMX public transit, where women face disproportionate risks. This finding has a direct parallel in London, where 77% of an Alternative Transit Service studied were women — also explained by safety and operational structure.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          The service replaces complex multi-modal trips, not simple ones
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            74% of the trips replaced by Jetty would have involved at least two modes without the service; on average 2.2 modes per trip. One in five of those replaced trips would have involved Metro plus Microbus. This is a genuinely underserved need: the formal transit network connects the city's central areas well but provides poor direct connections from the residential north to the major job clusters at Santa Fe and Polanco. Jetty substitutes not just a mode but an entire multi-stage journey — which explains both the time savings users value and the complexity gains that show up in the model.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          The service primarily serves commuting — not leisure
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            95% of users cited their latest trip purpose as work commuting. In European cities (Berlin, Munich, Hamburg) the majority of pooled-ride trips are for leisure, often with an evening peak. Jetty has a morning peak at 6 a.m. — nearly double the evening demand. This is consistent with the geography (connecting suburban north to downtown job clusters) and the strong "value of time before reaching work" effect visible in the frequency data. The commute focus also means users have fixed, repeated trip patterns: 22% of survey respondents made every trip on exactly the same route.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          High car ownership among users is not a contradiction — it is the point
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            80% of survey respondents have at least one car in their household — nearly 2.5x the city average. At first glance this seems odd for shared mobility. But this is exactly who Jetty is designed for: people with a car who are choosing not to drive it. The service competes with private car use, not with metro. Users cite parking problems, time use while traveling, and trip cost as reasons — all car-relevant factors. These users are the sustainability target. Getting someone out of their car and into a van with eight other people is a far bigger VKT and emissions win than getting someone off the metro.
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-trigger" onclick="toggleAcc(this)">
+          Sentiment analysis and choice models are complementary — not redundant
+          <span class="acc-icon">+</span>
+        </button>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            A methodological contribution of the paper is demonstrating how open-text sentiment analysis surfaces dimensions that closed-question models miss. The word-network analysis revealed "friendly drivers" as a significant positive association — a service attribute never asked about explicitly. It surfaced requests to expand routes as a key unmet need. It produced a valid quantitative sentiment score that showed statistically significant gender differences (p = 0.006). The authors conclude these two methods should be treated as complementary tools in transport research, not alternatives.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§</span></div>
+
+  <section class="section reveal">
+    <div class="section-label">Policy Implications</div>
+    <h2>What this means for city planning and shared mobility policy</h2>
+
+    <div class="finding">
+      <div class="finding-n">01</div>
+      <div class="finding-body">
+        <strong>Subsidies for low-income users and women are not optional — they are structural</strong>
+        <p>The service is currently affordable only for middle and high-income users. Women who use it for safety reasons earn on average 21% less than men — and pay the same fare. If pooled rides are to function as equitable infrastructure rather than a premium service, subsidy mechanisms targeting these groups are essential. France has piloted carpooling subsidies with some success; Mexico City needs an equivalent policy conversation.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">02</div>
+      <div class="finding-body">
+        <strong>Improving PT safety is a transport policy imperative — and a shared mobility policy lever</strong>
+        <p>This paper documents in detail how unsafe formal transit drives women toward premium alternatives they can barely afford. Addressing sexual harassment and theft in the metro and colectivos is not separable from the question of shared mobility sustainability. It is, in fact, a precondition for it.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">03</div>
+      <div class="finding-body">
+        <strong>Route expansion in transit-poor northern CDMX is both a demand and equity priority</strong>
+        <p>User comments overwhelmingly requested route expansion in the north — exactly where PT accessibility is lowest and the urban marginalisation index is highest. Planning pooled-ride routes to match unmet transit demand, rather than duplicating well-served corridors, maximises both impact and equity.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">04</div>
+      <div class="finding-body">
+        <strong>Integration with formal transit requires addressing the digital exclusion problem</strong>
+        <p>Using Jetty requires a smartphone, a bank account, and a credit card. These exclude significant segments of CDMX's population — particularly low-income, elderly, and unbanked residents. Any policy push to integrate pooled rides into the formal transport system must include physical access points and alternative payment mechanisms.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-n">05</div>
+      <div class="finding-body">
+        <strong>Scheduled fixed-route pooling outperforms real-time ride-splitting for reliability</strong>
+        <p>Unlike UberPOOL, Jetty operates on fixed routes and schedules — users know their pickup time and route in advance, guaranteed seating is possible, and detour uncertainty is eliminated. The paper's findings suggest these operational characteristics are a key driver of user satisfaction, particularly for time-sensitive work commuters.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-block reveal">
+    <h2>Read the complete study</h2>
+    <p>This explainer covers the paper's main findings. The full paper includes complete model tables, the exploratory factor analysis results, the N-gram word network, a detailed taxonomy of the pooled-ride ecosystem, and an extensive literature synthesis spanning 17 countries.</p>
+    <a href="https://doi.org/10.1016/j.tbs.2025.101072" target="_blank" class="cta-btn">Read the Full Paper →</a>
+    <p class="cta-meta">Abouelela et al. (2025) · Travel Behaviour and Society Vol. 41 · DOI: 10.1016/j.tbs.2025.101072 · Open Access CC BY 4.0</p>
+  </div>
+
+</main>
+
+<script>
+window.addEventListener('scroll', () => {
+  const pct = Math.min(100, (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+const chartObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.reason-fill, .score-bar').forEach((b, i) => {
+        setTimeout(() => b.classList.add('animated'), i * 90);
+      });
+      chartObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.25 });
+
+['reasonsChart', 'sentimentBlock'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) chartObs.observe(el);
+});
+
+function switchGTab(id, btn) {
+  document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.g-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+function toggleAcc(btn) {
+  const item = btn.closest('.acc-item');
+  const body = item.querySelector('.acc-body');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.acc-body').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+</script>
+</body>
+</html>
