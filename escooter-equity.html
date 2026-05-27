@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do We All Need Shared E-Scooters?</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f0f7ff;
+    --cream: #e3f0fd;
+    --accent: #ff6b35;
+    --accent2: #3a86ff;
+    --accent3: #2ec4b6;
+    --accent4: #ff9f1c;
+    --muted: #7a8faa;
+    --border: #c0d8f0;
+    --q1: #3a86ff;
+    --q2: #2ec4b6;
+    --q3: #ff6b35;
+    --q4: #ff9f1c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-right {
+    background: linear-gradient(135deg, #3a86ff 0%, #2ec4b6 50%, #ff6b35 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.06) 20px,
+      rgba(255,255,255,0.06) 40px
+    );
+  }
+
+  .scooter-art {
+    font-size: 160px;
+    line-height: 1;
+    opacity: 0.35;
+    color: white;
+    text-align: center;
+    animation: float 6s ease-in-out infinite;
+    user-select: none;
+    transform: scaleX(-1);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: scaleX(-1) translateY(0); }
+    50% { transform: scaleX(-1) translateY(-20px); }
+  }
+
+  .hero-stat-overlay {
+    position: absolute;
+    top: 40px; right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .stat-pill {
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 12px 20px;
+    border-radius: 4px;
+    text-align: right;
+    backdrop-filter: blur(8px);
+  }
+
+  .stat-pill .num {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    color: white;
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-pill .lbl {
+    font-size: 10px;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.1;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .byline {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 40px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .abstract-box {
+    background: white;
+    border-left: 3px solid var(--accent2);
+    padding: 24px 28px;
+    font-size: 15px;
+    line-height: 1.75;
+    max-width: 520px;
+    color: #3a4a5a;
+    box-shadow: 0 4px 24px rgba(58,134,255,0.08);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 60px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .scroll-hint::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── SECTION COMMONS ── */
+  section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 60px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 3vw, 44px);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .lead {
+    font-size: 18px;
+    color: #4a4540;
+    max-width: 640px;
+    margin-bottom: 60px;
+    line-height: 1.8;
+  }
+
+  /* ── HYPOTHESIS BANNER ── */
+  .hypothesis-section {
+    background: linear-gradient(135deg, #3a86ff 0%, #5b5bd6 100%);
+    color: white;
+    padding: 0;
+  }
+
+  .hypothesis-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 60px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hyp-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 16px;
+  }
+
+  .hyp-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.4;
+  }
+
+  .hyp-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 2.2vw, 28px);
+    line-height: 1.5;
+    border-left: 3px solid rgba(255,255,255,0.6);
+    padding-left: 32px;
+    font-style: italic;
+    color: rgba(255,255,255,0.95);
+  }
+
+  /* ── METHODOLOGY STEPS ── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 60px;
+    box-shadow: 0 4px 32px rgba(58,134,255,0.06);
+  }
+
+  .step-card {
+    background: white;
+    padding: 40px 32px;
+    position: relative;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+
+  .step-card:hover {
+    background: white;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(58,134,255,0.12);
+    z-index: 1;
+  }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .step-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .step-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── QUARTERS INTERACTIVE ── */
+  .quarters-section {
+    background: linear-gradient(160deg, #1a1a4e 0%, #16213e 60%, #0f3460 100%);
+    color: white;
+    padding: 0;
+  }
+
+  .quarters-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 60px;
+  }
+
+  .quarters-inner .section-label { color: rgba(255,255,255,0.3); }
+  .quarters-inner .section-label::before { background: rgba(255,255,255,0.15); }
+  .quarters-inner h2 { color: white; }
+  .quarters-inner .lead { color: rgba(255,255,255,0.55); }
+
+  .scatter-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: 60px;
+  }
+
+  .scatter-container {
+    position: relative;
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 2px;
+    padding: 48px 16px 48px 56px;
+  }
+
+  .scatter-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    position: relative;
+  }
+
+  .axis-label-y {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .axis-label-x {
+    position: absolute;
+    bottom: 14px;
+    left: 56px;
+    right: 16px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+  }
+
+  .scatter-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .quarter-info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .quarter-card {
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 24px 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .quarter-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    transition: all 0.25s;
+  }
+
+  .quarter-card.q1::before { background: var(--q1); }
+  .quarter-card.q2::before { background: var(--q2); }
+  .quarter-card.q3::before { background: var(--q3); }
+  .quarter-card.q4::before { background: var(--q4); }
+
+  .quarter-card:hover, .quarter-card.active {
+    background: rgba(255,255,255,0.06);
+    transform: translateX(4px);
+  }
+
+  .quarter-card.active { border-color: rgba(255,255,255,0.2); }
+
+  .qcard-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .qcard-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .q1 .qcard-dot { background: var(--q1); }
+  .q2 .qcard-dot { background: var(--q2); }
+  .q3 .qcard-dot { background: var(--q3); }
+  .q4 .qcard-dot { background: var(--q4); }
+
+  .qcard-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: white;
+  }
+
+  .qcard-badge {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.4);
+  }
+
+  .qcard-body {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s;
+    opacity: 0;
+  }
+
+  .quarter-card.active .qcard-body {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .qcard-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 14px;
+  }
+
+  .qstat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .qstat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    color: white;
+    line-height: 1;
+  }
+
+  .qstat-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+  }
+
+  /* ── RESULTS SECTION ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-top: 60px;
+  }
+
+  .mode-col {
+    background: white;
+    padding: 28px 20px;
+  }
+
+  .mode-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .bar-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: var(--cream);
+    border-radius: 1px;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-fill.enhance { background: var(--accent3); }
+  .bar-fill.noop    { background: var(--border); }
+  .bar-fill.decrease{ background: var(--accent); }
+
+  .bar-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .big-pct {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .big-pct.green { color: var(--accent3); }
+  .big-pct.red   { color: var(--accent); }
+
+  .mode-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── KEY FINDING ── */
+  .finding-section {
+    background: linear-gradient(135deg, #ff6b35 0%, #f72585 100%);
+    color: white;
+    padding: 0;
+  }
+
+  .finding-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 60px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .finding-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 120px;
+    line-height: 1;
+    color: rgba(255,255,255,0.2);
+    white-space: nowrap;
+  }
+
+  .finding-text h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: white;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .finding-text p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.8;
+    max-width: 580px;
+  }
+
+  /* ── RECOMMENDATIONS ── */
+  .recs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 60px;
+  }
+
+  .rec-card {
+    padding: 36px 32px;
+    border: 1px solid var(--border);
+    background: white;
+    position: relative;
+    transition: all 0.3s;
+    border-radius: 2px;
+  }
+
+  .rec-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(58,134,255,0.12);
+  }
+
+  .rec-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .rec-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .rec-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── POPULATION SIMULATOR ── */
+  .simulator-section {
+    background: linear-gradient(135deg, #fff9e6 0%, #ffecd2 100%);
+    padding: 0;
+  }
+
+  .simulator-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 60px;
+  }
+
+  .sim-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 60px;
+  }
+
+  .sim-panel {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 36px;
+    border-radius: 2px;
+    box-shadow: 0 4px 20px rgba(255,159,28,0.08);
+  }
+
+  .sim-panel h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slider-group {
+    margin-bottom: 24px;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .slider-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .slider-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent2);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    outline: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent2);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .sim-result {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    border-radius: 2px;
+    box-shadow: 0 4px 20px rgba(255,159,28,0.08);
+  }
+
+  .sim-result h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quarter-result-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .qr-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .qr-name {
+    font-size: 13px;
+    font-weight: 500;
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .qr-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--cream);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .qr-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .qr-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    width: 44px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .sim-verdict {
+    background: #1a1a4e;
+    color: white;
+    padding: 20px 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    border-radius: 2px;
+  }
+
+  .sim-verdict strong { color: #ff9f1c; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #1a1a4e;
+    color: rgba(255,255,255,0.4);
+    padding: 60px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  footer a { color: #ff9f1c; text-decoration: none; }
+
+  /* ── DIVIDER ── */
+  .rule { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: fixed;
+    background: #1a1a4e;
+    color: white;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+    z-index: 999;
+    border-radius: 2px;
+    white-space: nowrap;
+    display: none;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    section { padding: 60px 24px; }
+    .hypothesis-inner, .finding-inner, .simulator-inner, .quarters-inner { padding: 60px 24px; }
+    .steps-grid, .results-grid, .recs-grid { grid-template-columns: 1fr; }
+    .scatter-wrapper { grid-template-columns: 1fr; }
+    .sim-controls { grid-template-columns: 1fr; }
+    .hypothesis-inner { grid-template-columns: 1fr; }
+    .finding-inner { grid-template-columns: 1fr; }
+    .finding-num { font-size: 60px; }
+    footer { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <p class="tag">Transportation Research Part A · 2024</p>
+    <h1>Do We All Need Shared <em>E-Scooters?</em></h1>
+    <p class="byline">Abouelela · Durán-Rodas · Antoniou &nbsp;|&nbsp; Technical University of Munich</p>
+    <div class="abstract-box">
+      Shared e-scooters were introduced as a sustainable transport option. But do they actually improve accessibility for <em>everyone</em>? This study proposes an accessibility-centered framework to evaluate spatial equity — and the findings challenge the narrative of micromobility as a universal good.
+    </div>
+    <p class="scroll-hint">Scroll to explore</p>
+  </div>
+  <div class="hero-right">
+    <div class="scooter-art">🛴</div>
+    <div class="hero-stat-overlay">
+      <div class="stat-pill">
+        <span class="num">1,903</span>
+        <span class="lbl">Scenarios analyzed</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num">8%</span>
+        <span class="lbl">Accessibility gains</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num">390K</span>
+        <span class="lbl">Scooter trips</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HYPOTHESIS -->
+<div class="hypothesis-section">
+  <div class="hypothesis-inner">
+    <div>
+      <p class="hyp-label">Core Hypothesis</p>
+      <p class="hyp-title">The central question driving this research</p>
+    </div>
+    <blockquote class="hyp-quote">
+      "The introduction of shared E-scooters does not increase — or poorly increases — accessibility to different opportunities compared to available modes of transportation, especially for disadvantaged population groups."
+    </blockquote>
+  </div>
+</div>
+
+<!-- METHODOLOGY -->
+<section>
+  <p class="section-label">Methodology</p>
+  <h2>A Three-Part Framework</h2>
+  <p class="lead">Using entirely open-source data from Louisville, KY — enabling transparent, reproducible analysis of transport equity at the census block level.</p>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-num">01</span>
+      <h3>Data Collection</h3>
+      <p>Five primary sources: sociodemographic census data, 390K scooter trip records (Aug 2018–Jan 2020), Points of Interest from OpenStreetMap, road network data, and GTFS public transit feeds.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">02</span>
+      <h3>Accessibility &amp; PMI</h3>
+      <p>Cumulative accessibility measured as the number of opportunities reachable within 5–15 min by each mode. Paired with Potential Mobility Index (PMI): average aerial speed across all census block pairs.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">03</span>
+      <h3>Sensitivity Analysis</h3>
+      <p>1,903 main scenarios × 4 accessibility thresholds × 252 census blocks = over 1.9 million scenario evaluations. Scooter accessibility compared against walking, cycling, PT, car, and TNC.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ── QUARTERS — THE INTERACTIVE CENTREPIECE ── -->
+<div class="quarters-section">
+  <div class="quarters-inner">
+    <p class="section-label">Population Classification</p>
+    <h2>The Four Population Quarters</h2>
+    <p class="lead">Communities were classified along two axes — household income and car ownership — to identify transport-disadvantaged groups. Click each quarter to explore its characteristics.</p>
+
+    <div class="scatter-wrapper">
+      <!-- Scatter Plot -->
+      <div class="scatter-container">
+        <span class="axis-label-y">% Households with Zero Cars</span>
+        <span class="axis-label-x">% Households with Annual Income &lt; $30,000</span>
+        <div class="scatter-canvas">
+          <svg class="scatter-svg" id="scatterSvg" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid lines -->
+            <line x1="0" y1="85" x2="340" y2="85" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="0" y1="170" x2="340" y2="170" stroke="rgba(255,255,255,0.07)" stroke-dasharray="4,4"/>
+            <line x1="0" y1="255" x2="340" y2="255" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="85" y1="0" x2="85" y2="340" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line x1="170" y1="0" x2="170" y2="340" stroke="rgba(255,255,255,0.07)" stroke-dasharray="4,4"/>
+            <line x1="255" y1="0" x2="255" y2="340" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+
+            <!-- Quadrant dividers -->
+            <line x1="102" y1="0" x2="102" y2="340" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <line x1="0" y1="309" x2="340" y2="309" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+
+            <!-- Threshold labels -->
+            <text x="106" y="336" font-family="DM Mono, monospace" font-size="8" fill="rgba(255,255,255,0.3)">30%</text>
+            <text x="2" y="307" font-family="DM Mono, monospace" font-size="8" fill="rgba(255,255,255,0.3)">9%</text>
+
+            <!-- Quarter labels -->
+            <text x="8" y="16" font-family="DM Mono, monospace" font-size="9" fill="rgba(107,158,106,0.6)" font-weight="500">Q2</text>
+            <text x="290" y="16" font-family="DM Mono, monospace" font-size="9" fill="rgba(200,68,10,0.7)" font-weight="500">Q3</text>
+            <text x="8" y="330" font-family="DM Mono, monospace" font-size="9" fill="rgba(42,95,138,0.7)" font-weight="500">Q1</text>
+            <text x="290" y="330" font-family="DM Mono, monospace" font-size="9" fill="rgba(138,90,30,0.7)" font-weight="500">Q4</text>
+
+            <!-- Data points will be injected by JS -->
+            <g id="dataPoints"></g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Quarter Cards -->
+      <div class="quarter-info-panel">
+        <div class="quarter-card q1 active" data-quarter="Q1" onclick="selectQuarter('Q1', this)">
+          <div class="qcard-header">
+            <div class="qcard-dot"></div>
+            <span class="qcard-name">Q1 — The Affluent</span>
+            <span class="qcard-badge">35.3%</span>
+          </div>
+          <div class="qcard-body">
+            <p>High income, low car dependency pressure. Concentrated in the <strong style="color:white">east of Louisville</strong>, these 89 census blocks represent the city's wealthy population. They have high accessibility to opportunities and are least at risk of transport-related social exclusion.</p>
+            <div class="qcard-stats">
+              <div class="qstat">
+                <span class="qstat-num" style="color:#3a86ff">89</span>
+                <span class="qstat-lbl">Census Blocks</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#3a86ff">&lt;30%</span>
+                <span class="qstat-lbl">Low-income HH</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#3a86ff">&lt;9%</span>
+                <span class="qstat-lbl">Zero-car HH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quarter-card q2" data-quarter="Q2" onclick="selectQuarter('Q2', this)">
+          <div class="qcard-header">
+            <div class="qcard-dot"></div>
+            <span class="qcard-name">Q2 — Car-Free Advantaged</span>
+            <span class="qcard-badge">7.5%</span>
+          </div>
+          <div class="qcard-body">
+            <p>Low income but also low car ownership — potentially through choice, density, or proximity to transit. These 19 blocks represent an interesting transitional group, often found near denser urban cores with better PT coverage.</p>
+            <div class="qcard-stats">
+              <div class="qstat">
+                <span class="qstat-num" style="color:#2ec4b6">19</span>
+                <span class="qstat-lbl">Census Blocks</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#2ec4b6">&lt;30%</span>
+                <span class="qstat-lbl">Low-income HH</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#2ec4b6">&gt;9%</span>
+                <span class="qstat-lbl">Zero-car HH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quarter-card q3" data-quarter="Q3" onclick="selectQuarter('Q3', this)">
+          <div class="qcard-header">
+            <div class="qcard-dot"></div>
+            <span class="qcard-name">Q3 — Severely Disadvantaged</span>
+            <span class="qcard-badge">47.6%</span>
+          </div>
+          <div class="qcard-body">
+            <p>The largest and most concerning group: 120 census blocks in the <strong style="color:white">west of Louisville</strong> with both high poverty rates and high car-free households. Correlated with racial minorities, low education, unemployment, and PT dependence. These communities also have the fewest nearby Points of Interest — making e-scooters largely irrelevant to their transport needs.</p>
+            <div class="qcard-stats">
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff6b35">120</span>
+                <span class="qstat-lbl">Census Blocks</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff6b35">&gt;30%</span>
+                <span class="qstat-lbl">Low-income HH</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff6b35">&gt;9%</span>
+                <span class="qstat-lbl">Zero-car HH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quarter-card q4" data-quarter="Q4" onclick="selectQuarter('Q4', this)">
+          <div class="qcard-header">
+            <div class="qcard-dot"></div>
+            <span class="qcard-name">Q4 — Forced Car Owners</span>
+            <span class="qcard-badge">9.5%</span>
+          </div>
+          <div class="qcard-body">
+            <p>High income pressure but high car ownership — a signal of <strong style="color:white">forced car dependency</strong>. These 24 blocks represent low-income residents who must own cars because alternatives are inadequate. Car ownership here is a financial burden, not a choice. E-scooters offer little relief without first addressing the structural absence of transit.</p>
+            <div class="qcard-stats">
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff9f1c">24</span>
+                <span class="qstat-lbl">Census Blocks</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff9f1c">&gt;30%</span>
+                <span class="qstat-lbl">Low-income HH</span>
+              </div>
+              <div class="qstat">
+                <span class="qstat-num" style="color:#ff9f1c">&lt;9%</span>
+                <span class="qstat-lbl">Zero-car HH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KEY FINDING -->
+<div class="finding-section">
+  <div class="finding-inner">
+    <div class="finding-num">8%</div>
+    <div class="finding-text">
+      <h2>Scooters Improved Accessibility in Only 8% of Examined Scenarios</h2>
+      <p>Across 1.9 million scenario evaluations, e-scooters only meaningfully improved accessibility when replacing walking, cycling, or public transit — not motorized modes. Critically, <strong>disadvantaged groups (Q3 &amp; Q4) gained no significant advantage</strong> compared to the rest of the population. The gap is not about scooters — it's about the built environment.</p>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS BY MODE -->
+<section>
+  <p class="section-label">Sensitivity Analysis Results</p>
+  <h2>Scooter Impact by Replaced Mode</h2>
+  <p class="lead">For each transportation mode, e-scooters were evaluated as a replacement across all scenarios. The results reveal a consistent pattern: scooters compete with sustainable modes, not car travel.</p>
+
+  <div class="results-grid" id="resultsGrid">
+    <!-- Injected by JS -->
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- SIMULATOR -->
+<div class="simulator-section">
+  <div class="simulator-inner">
+    <p class="section-label">Interactive Tool</p>
+    <h2>Population Quarter Simulator</h2>
+    <p class="lead">Adjust the demographic thresholds to see how the population distribution across the four quarters changes — and what that means for scooter equity.</p>
+
+    <div class="sim-controls">
+      <div class="sim-panel">
+        <h3>Adjust Thresholds</h3>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-name">Low-income threshold</span>
+            <span class="slider-val" id="incomeVal">30%</span>
+          </div>
+          <input type="range" min="10" max="60" value="30" id="incomeThresh" oninput="updateSim()">
+          <p style="font-size:11px; color:var(--muted); margin-top:6px;">% households with income &lt; $30K/yr to be classified as low-income area</p>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-name">Zero-car threshold</span>
+            <span class="slider-val" id="carVal">9%</span>
+          </div>
+          <input type="range" min="3" max="30" value="9" id="carThresh" oninput="updateSim()">
+          <p style="font-size:11px; color:var(--muted); margin-top:6px;">% households with no car to be classified as car-free area (US avg: 9%)</p>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-name">Scooter accessibility gain</span>
+            <span class="slider-val" id="gainVal">8%</span>
+          </div>
+          <input type="range" min="1" max="30" value="8" id="gainSlider" oninput="updateSim()">
+          <p style="font-size:11px; color:var(--muted); margin-top:6px;">% of scenarios where scooters improve accessibility</p>
+        </div>
+      </div>
+
+      <div class="sim-result">
+        <h3>Projected Quarter Distribution</h3>
+
+        <div class="quarter-result-row">
+          <div class="qr-dot" style="background:var(--q1)"></div>
+          <span class="qr-name" style="color:var(--ink)">Q1 Affluent</span>
+          <div class="qr-bar-track">
+            <div class="qr-bar-fill" id="bar-q1" style="background:var(--q1); width:35%"></div>
+          </div>
+          <span class="qr-pct" id="pct-q1" style="color:var(--q1)">35%</span>
+        </div>
+
+        <div class="quarter-result-row">
+          <div class="qr-dot" style="background:var(--q2)"></div>
+          <span class="qr-name" style="color:var(--ink)">Q2 Car-Free</span>
+          <div class="qr-bar-track">
+            <div class="qr-bar-fill" id="bar-q2" style="background:var(--q2); width:8%"></div>
+          </div>
+          <span class="qr-pct" id="pct-q2" style="color:var(--q2)">8%</span>
+        </div>
+
+        <div class="quarter-result-row">
+          <div class="qr-dot" style="background:var(--q3)"></div>
+          <span class="qr-name" style="color:var(--ink)">Q3 Disadvantaged</span>
+          <div class="qr-bar-track">
+            <div class="qr-bar-fill" id="bar-q3" style="background:var(--q3); width:48%"></div>
+          </div>
+          <span class="qr-pct" id="pct-q3" style="color:var(--q3)">48%</span>
+        </div>
+
+        <div class="quarter-result-row">
+          <div class="qr-dot" style="background:var(--q4)"></div>
+          <span class="qr-name" style="color:var(--ink)">Q4 Forced Car</span>
+          <div class="qr-bar-track">
+            <div class="qr-bar-fill" id="bar-q4" style="background:var(--q4); width:10%"></div>
+          </div>
+          <span class="qr-pct" id="pct-q4" style="color:var(--q4)">10%</span>
+        </div>
+
+        <hr style="border:none; border-top: 1px solid var(--border)">
+
+        <div>
+          <p style="font-size:12px; color:var(--muted); margin-bottom:8px; font-family: 'DM Mono', monospace; text-transform:uppercase; letter-spacing:0.08em;">Equity Assessment</p>
+          <div class="sim-verdict" id="simVerdict">
+            At the current thresholds, <strong>57.1%</strong> of census blocks are in disadvantaged or forced-car categories (Q3+Q4). With only an <strong>8%</strong> accessibility gain rate, scooters benefit a very small slice of the population — and the disadvantaged majority sees no preferential gains.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECOMMENDATIONS -->
+<section>
+  <p class="section-label">Policy Implications</p>
+  <h2>Toward Equitable Deployment</h2>
+  <p class="lead">The paper argues that equity in micromobility requires addressing root structural causes, not just adding more vehicles in disadvantaged zones.</p>
+
+  <div class="recs-grid">
+    <div class="rec-card">
+      <span class="rec-icon">🏙️</span>
+      <h3>Land Use First</h3>
+      <p>Before deploying e-scooters, cities must diversify land use in disadvantaged areas. More nearby destinations (POIs) directly increase the utility of any transport mode, including scooters.</p>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">📋</span>
+      <h3>Needs Assessment</h3>
+      <p>A mobility needs assessment should precede deployment. If the service doesn't match a community's transport needs or urban structure, deployment may deepen inequality rather than reduce it.</p>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🚌</span>
+      <h3>Strengthen PT First</h3>
+      <p>For Q3 communities, expanding public transit coverage may yield far greater equity benefits than introducing shared micromobility that requires smartphones, banking access, and nearby destinations.</p>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">👥</span>
+      <h3>Collaborative Governance</h3>
+      <p>Deployment plans should involve users, city authorities, and operators — with equity outcomes (not just reach) as the primary performance metric, backed by enforceable standards.</p>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">📍</span>
+      <h3>POI-Aligned Fleets</h3>
+      <p>Fleet distribution requirements that ignore Points of Interest density are ineffective. Vehicle placement should be tied to destinations, not just geographic area quotas.</p>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">📊</span>
+      <h3>Longitudinal Monitoring</h3>
+      <p>Cities must track equitable outcomes over time — not just at launch. Operator data should be publicly accessible and independently reviewed, with penalties for non-compliance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <strong style="color:rgba(255,255,255,0.6)">Abouelela, Durán-Rodas &amp; Antoniou (2024)</strong><br>
+    "Do we all need shared E-scooters? An accessibility-centered spatial equity evaluation approach"<br>
+    Transportation Research Part A, Vol. 181, 103985<br>
+    <a href="https://doi.org/10.1016/j.tra.2024.103985">doi:10.1016/j.tra.2024.103985</a>
+  </div>
+  <div style="text-align:right">
+    Chair of Transportation Systems Engineering<br>
+    Technical University of Munich<br>
+    CC BY-NC 4.0 License
+  </div>
+</footer>
+
+<script>
+// ── SCATTER PLOT DATA ──
+const quarterColors = { Q1: '#3a86ff', Q2: '#2ec4b6', Q3: '#ff6b35', Q4: '#ff9f1c' };
+
+// Realistic synthetic points based on the paper's description
+function generatePoints() {
+  const pts = [];
+  const r = (min, max) => min + Math.random() * (max - min);
+  // Q1: low income (<30%), low car (<9%) → bottom-left
+  for (let i = 0; i < 89; i++) pts.push({ x: r(0, 28), y: r(0, 8.5), q: 'Q1' });
+  // Q2: low income (<30%), high car (>9%) → top-left
+  for (let i = 0; i < 19; i++) pts.push({ x: r(0, 28), y: r(10, 75), q: 'Q2' });
+  // Q3: high income (>30%), high car (>9%) → top-right
+  for (let i = 0; i < 120; i++) pts.push({ x: r(31, 97), y: r(10, 90), q: 'Q3' });
+  // Q4: high income (>30%), low car (<9%) → bottom-right
+  for (let i = 0; i < 24; i++) pts.push({ x: r(31, 95), y: r(0, 8.5), q: 'Q4' });
+  return pts;
+}
+
+const scatterData = generatePoints();
+
+function renderScatter(activeQ) {
+  const svg = document.getElementById('dataPoints');
+  const W = 340, H = 340;
+  const pad = { l: 0, r: 0, t: 0, b: 0 };
+  // x: 0–100% income, y: 0–100% zero-car (inverted: 0% at bottom)
+  const toX = v => (v / 100) * W;
+  const toY = v => H - (v / 100) * H;
+
+  svg.innerHTML = scatterData.map(pt => {
+    const cx = toX(pt.x);
+    const cy = toY(pt.y);
+    const isActive = !activeQ || pt.q === activeQ;
+    const color = quarterColors[pt.q];
+    const opacity = isActive ? 0.75 : 0.08;
+    const r = isActive ? 4 : 3;
+    return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="${color}" opacity="${opacity}" 
+      class="scatter-pt" data-q="${pt.q}"
+      style="transition: all 0.3s; cursor: pointer"/>`;
+  }).join('');
+
+  // Add interaction
+  svg.querySelectorAll('.scatter-pt').forEach(el => {
+    el.addEventListener('mouseenter', (e) => {
+      showTooltip(e, `Quarter ${el.dataset.q}`);
+      e.target.setAttribute('r', 6);
+    });
+    el.addEventListener('mouseleave', (e) => {
+      hideTooltip();
+      const isActive = !activeQ || e.target.dataset.q === activeQ;
+      e.target.setAttribute('r', isActive ? 4 : 3);
+    });
+    el.addEventListener('click', (e) => {
+      selectQuarterByKey(e.target.dataset.q);
+    });
+  });
+}
+
+let activeQuarter = 'Q1';
+
+function selectQuarter(q, el) {
+  activeQuarter = q;
+  document.querySelectorAll('.quarter-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderScatter(q);
+}
+
+function selectQuarterByKey(q) {
+  const el = document.querySelector(`.quarter-card[data-quarter="${q}"]`);
+  if (el) selectQuarter(q, el);
+}
+
+// ── RESULTS GRID ──
+const modeData = [
+  { name: 'Walk', enhance: 20.1, noop: 78.1, decrease: 1.8, popGain: '22%', color: '#4a8c3f', desc: 'Best case for scooters. Replacing walking offers the most accessibility gains — but also crowds out healthy active mobility.' },
+  { name: 'PT', enhance: 9.0, noop: 76.1, decrease: 15.0, popGain: '17%', color: '#2a5f8a', desc: 'Replacing transit shows some gains in 9% of scenarios, but 15% of cases see accessibility decrease. Scooters compete with PT.' },
+  { name: 'Bike', enhance: 3.8, noop: 63.2, decrease: 33.0, popGain: '12%', color: '#7a4a1e', desc: 'Very limited gains when replacing cycling. In 33% of scenarios, scooters actually decrease accessibility vs. private bikes.' },
+  { name: 'Car', enhance: 0.9, noop: 38.5, decrease: 60.7, popGain: '8%', color: '#888', desc: 'Almost no benefit replacing car trips. In 60.7% of scenarios, accessibility is worse — cars remain dominant for longer trips.' },
+  { name: 'TNC', enhance: 0.3, noop: 54.2, decrease: 45.6, popGain: '2%', color: '#555', desc: 'Replacing ride-hail services with scooters almost never improves accessibility. TNC and car modes already cover what scooters cannot.' }
+];
+
+function renderResults() {
+  const grid = document.getElementById('resultsGrid');
+  grid.innerHTML = modeData.map(m => `
+    <div class="mode-col">
+      <p class="mode-name">${m.name}</p>
+      <div class="big-pct green">${m.enhance}%</div>
+      <p style="font-size:11px; color:var(--muted); margin-bottom:20px;">enhancement</p>
+
+      <div class="bar-wrap">
+        <div class="bar-item">
+          <div class="bar-lbl"><span style="color:#4a8c3f">▲ Enhance</span><span>${m.enhance}%</span></div>
+          <div class="bar-track"><div class="bar-fill enhance" style="width:${m.enhance}%"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-lbl"><span style="color:var(--muted)">● No change</span><span>${m.noop}%</span></div>
+          <div class="bar-track"><div class="bar-fill noop" style="width:${m.noop}%"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-lbl"><span style="color:var(--accent)">▼ Decrease</span><span>${m.decrease}%</span></div>
+          <div class="bar-track"><div class="bar-fill decrease" style="width:${m.decrease}%"></div></div>
+        </div>
+      </div>
+
+      <p style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.08em">Avg pop. gain</p>
+      <p style="font-family:'DM Serif Display',serif; font-size:28px; color:${m.color}; margin-bottom:12px">${m.popGain}</p>
+      <p class="mode-desc">${m.desc}</p>
+    </div>
+  `).join('');
+}
+
+// ── SIMULATOR ──
+function updateSim() {
+  const incomeT = parseInt(document.getElementById('incomeThresh').value);
+  const carT = parseInt(document.getElementById('carThresh').value);
+  const gain = parseInt(document.getElementById('gainSlider').value);
+
+  document.getElementById('incomeVal').textContent = incomeT + '%';
+  document.getElementById('carVal').textContent = carT + '%';
+  document.getElementById('gainVal').textContent = gain + '%';
+
+  // Estimate distribution based on thresholds
+  // Using log-like curves to simulate realistic shifts
+  const totalBlocks = 252;
+  const lowIncomeFrac = incomeT / 100;
+  const highCarFrac = carT / 100;
+
+  // Approximate block distribution given threshold
+  const q3Frac = lowIncomeFrac * (1 - highCarFrac * 0.3) * 0.85 + 0.1;
+  const q4Frac = lowIncomeFrac * highCarFrac * 0.4 * 0.8 + 0.02;
+  const q2Frac = (1 - lowIncomeFrac) * highCarFrac * 0.6 * 0.5 + 0.02;
+  const q1Frac = Math.max(0.05, 1 - q3Frac - q4Frac - q2Frac);
+
+  const total = q1Frac + q2Frac + q3Frac + q4Frac;
+  const q1p = Math.round(q1Frac / total * 100);
+  const q2p = Math.round(q2Frac / total * 100);
+  const q3p = Math.round(q3Frac / total * 100);
+  const q4p = 100 - q1p - q2p - q3p;
+
+  document.getElementById('bar-q1').style.width = q1p + '%';
+  document.getElementById('bar-q2').style.width = q2p + '%';
+  document.getElementById('bar-q3').style.width = q3p + '%';
+  document.getElementById('bar-q4').style.width = Math.max(0,q4p) + '%';
+
+  document.getElementById('pct-q1').textContent = q1p + '%';
+  document.getElementById('pct-q2').textContent = q2p + '%';
+  document.getElementById('pct-q3').textContent = q3p + '%';
+  document.getElementById('pct-q4').textContent = Math.max(0,q4p) + '%';
+
+  const disadvantaged = q3p + Math.max(0,q4p);
+  const equityRisk = disadvantaged > 50 ? 'high' : disadvantaged > 35 ? 'moderate' : 'low';
+  const riskColor = equityRisk === 'high' ? '#c8440a' : equityRisk === 'moderate' ? '#c8a00a' : '#4a8c3f';
+
+  document.getElementById('simVerdict').innerHTML = `
+    At these thresholds, <strong>${disadvantaged}%</strong> of census blocks fall into disadvantaged or forced-car categories (Q3+Q4). 
+    With a <strong>${gain}%</strong> accessibility gain rate, equity risk is 
+    <strong style="color:${riskColor}">${equityRisk.toUpperCase()}</strong>. 
+    ${gain < 10 && disadvantaged > 50 ? 'Scooters are unlikely to meaningfully serve the majority of residents. <strong>Urban structural investment should precede micromobility deployment.</strong>' : 
+      gain > 20 ? 'Higher accessibility gains suggest scooters may be competitive here — but only if structural barriers (smartphone access, digital banking, POI proximity) are also addressed.' : 
+      'Targeted PT improvements and land-use densification remain more impactful than scooter expansion for this community profile.'}
+  `;
+}
+
+// ── TOOLTIP ──
+function showTooltip(e, text) {
+  const t = document.getElementById('tooltip');
+  t.innerHTML = text;
+  t.style.display = 'block';
+  t.style.left = (e.clientX + 12) + 'px';
+  t.style.top = (e.clientY - 8) + 'px';
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+
+document.addEventListener('mousemove', (e) => {
+  const t = document.getElementById('tooltip');
+  if (t.style.display === 'block') {
+    t.style.left = (e.clientX + 12) + 'px';
+    t.style.top = (e.clientY - 8) + 'px';
+  }
+});
+
+// ── SCROLL ANIMATIONS ──
+function animateBars() {
+  const bars = document.querySelectorAll('.bar-fill');
+  bars.forEach(b => {
+    const target = b.style.width;
+    b.style.width = '0%';
+    setTimeout(() => { b.style.width = target; }, 100);
+  });
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.target.id === 'resultsGrid') {
+      setTimeout(animateBars, 200);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+// ── INIT ──
+renderScatter('Q1');
+renderResults();
+updateSim();
+observer.observe(document.getElementById('resultsGrid'));
+</script>
+</body>
+</html>
