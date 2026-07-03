@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>An Elephant in the Bus — Violence Against Women in Cairo's Public Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F2EC;
+    --paper-deep:#EEE9DF;
+    --panel:#FFFFFF;
+    --ink:#211D1A;
+    --ink-soft:#5B554D;
+    --ink-faint:#8B8478;
+    --line:#DAD2C3;
+    --maroon:#7A2331;
+    --maroon-deep:#571623;
+    --gold:#B4862C;
+    --gold-soft:#E7D9B6;
+    --font-display:'Source Serif 4', serif;
+    --font-body:'IBM Plex Sans', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold-soft); color:var(--maroon-deep);}
+
+  a{color:var(--maroon); text-decoration-color:rgba(122,35,49,0.35);}
+  a:hover{text-decoration-color:var(--maroon);}
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:230px minmax(0,1fr);
+    max-width:1280px;
+    margin:0 auto;
+  }
+  @media (max-width:920px){
+    .shell{grid-template-columns:1fr;}
+  }
+
+  /* ---------- Line rail (signature element) ---------- */
+  .rail{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100vh;
+    padding:38px 0 38px 30px;
+    display:flex;
+    flex-direction:column;
+  }
+  @media (max-width:920px){ .rail{display:none;} }
+
+  .rail-brand{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.12em;
+    color:var(--ink-faint);
+    text-transform:uppercase;
+    margin-bottom:28px;
+  }
+  .rail-brand strong{display:block; color:var(--maroon); font-size:12px;}
+
+  .line-map{
+    position:relative;
+    padding-left:22px;
+    flex:1;
+    overflow-y:auto;
+  }
+  .line-map::before{
+    content:"";
+    position:absolute;
+    left:5px; top:6px; bottom:6px;
+    width:2px;
+    background:linear-gradient(var(--maroon), var(--gold));
+    border-radius:2px;
+  }
+  .stop{
+    position:relative;
+    display:block;
+    padding:9px 0 9px 16px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    text-decoration:none;
+    line-height:1.3;
+    border-radius:4px;
+    transition:color .15s ease, transform .15s ease;
+  }
+  .stop::before{
+    content:"";
+    position:absolute;
+    left:-22px; top:13px;
+    width:9px; height:9px;
+    background:var(--paper);
+    border:2px solid var(--maroon);
+    border-radius:50%;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .stop:hover{color:var(--maroon); transform:translateX(2px);}
+  .stop:hover::before{background:var(--maroon);}
+  .stop.active{color:var(--maroon-deep); font-weight:600;}
+  .stop.active::before{background:var(--gold); border-color:var(--gold); transform:scale(1.2);}
+  .stop .code{font-family:var(--font-mono); font-size:10px; color:var(--ink-faint); display:block; letter-spacing:.06em;}
+  .stop.active .code{color:var(--maroon);}
+
+  /* ---------- Main column ---------- */
+  main{padding:0 clamp(20px,4vw,64px) 80px; min-width:0;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:56px 0 40px;
+    border-bottom:1px solid var(--line);
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(34px,5.4vw,58px);
+    line-height:1.05;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  h1.title em{font-style:italic; color:var(--maroon);}
+
+  .authors{
+    font-size:15px;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+  .affiliation{
+    font-size:13px;
+    color:var(--ink-faint);
+    margin:0 0 26px;
+  }
+
+  .hero-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:8px;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    letter-spacing:.03em;
+    padding:11px 18px;
+    border-radius:3px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--maroon); color:#fff;}
+  .btn-primary:hover{box-shadow:0 6px 16px rgba(122,35,49,.28);}
+  .btn-ghost{border-color:var(--line); color:var(--ink); background:var(--panel);}
+  .btn-ghost:hover{border-color:var(--maroon); color:var(--maroon);}
+
+  /* ---------- Abstract ---------- */
+  .abstract{
+    margin:34px 0 0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--maroon);
+    border-radius:4px;
+    padding:26px 28px;
+  }
+  .abstract h2{
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    color:var(--ink-faint);
+    margin:0 0 12px;
+  }
+  .abstract p{margin:0; font-size:15.5px; color:var(--ink-soft);}
+  .keywords{margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;}
+  .kw{
+    font-family:var(--font-mono);
+    font-size:11px;
+    padding:5px 10px;
+    background:var(--paper-deep);
+    border-radius:20px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- Stat strip ---------- */
+  .stat-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    margin:44px 0;
+  }
+  @media (max-width:820px){ .stat-strip{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .stat-strip{grid-template-columns:1fr;} }
+  .stat{
+    background:var(--panel);
+    padding:24px 18px;
+    text-align:left;
+  }
+  .stat .num{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(28px,3.4vw,38px);
+    color:var(--maroon);
+    line-height:1;
+    display:block;
+    margin-bottom:8px;
+  }
+  .stat .label{font-size:12.5px; color:var(--ink-soft); line-height:1.4;}
+
+  /* ---------- Sections ---------- */
+  section.block{padding:56px 0; border-bottom:1px solid var(--line); scroll-margin-top:20px;}
+  section.block:last-of-type{border-bottom:none;}
+
+  .section-head{margin-bottom:26px;}
+  .section-head .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:8px;
+    display:block;
+  }
+  h2.section-title{
+    font-family:var(--font-display);
+    font-size:clamp(24px,3vw,32px);
+    font-weight:600;
+    margin:0;
+    color:var(--ink);
+  }
+  h3.sub-title{
+    font-family:var(--font-display);
+    font-size:20px;
+    font-weight:600;
+    margin:34px 0 14px;
+    color:var(--maroon-deep);
+  }
+
+  .prose p{font-size:15.5px; color:var(--ink-soft); margin:0 0 16px; max-width:74ch;}
+  .prose ul{max-width:74ch; padding-left:20px; margin:0 0 16px;}
+  .prose li{font-size:15.5px; color:var(--ink-soft); margin-bottom:6px;}
+  .prose strong{color:var(--ink);}
+  .pull{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-size:19px;
+    color:var(--maroon-deep);
+    border-left:3px solid var(--gold);
+    padding:4px 0 4px 20px;
+    margin:24px 0;
+    max-width:60ch;
+  }
+
+  .note{
+    font-size:12.5px;
+    color:var(--ink-faint);
+    background:var(--paper-deep);
+    border-radius:4px;
+    padding:12px 16px;
+    max-width:74ch;
+    margin:18px 0;
+  }
+
+  /* ---------- Bar charts ---------- */
+  .chart{margin:22px 0 30px; max-width:640px;}
+  .chart-title{font-family:var(--font-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); margin-bottom:14px;}
+  .bar-row{display:grid; grid-template-columns:150px 1fr 52px; align-items:center; gap:10px; margin-bottom:9px;}
+  .bar-row .bar-label{font-size:12.5px; color:var(--ink-soft); text-align:right;}
+  .bar-track{background:var(--paper-deep); border-radius:3px; height:14px; overflow:hidden;}
+  .bar-fill{height:100%; background:linear-gradient(90deg, var(--maroon), var(--gold)); border-radius:3px 0 0 3px; width:0%; transition:width 1s cubic-bezier(.2,.8,.2,1);}
+  .bar-row .bar-val{font-family:var(--font-mono); font-size:12px; color:var(--maroon-deep);}
+
+  /* ---------- Heatmap ---------- */
+  .heatmap-wrap{max-width:100%;}
+  .heatmap-table-wrap{margin:0;}
+  table.heatmap{min-width:920px;}
+  table.heatmap th{white-space:nowrap; font-size:10px;}
+  table.heatmap td:first-child{
+    font-size:12.5px; color:var(--ink); white-space:nowrap; background:var(--panel);
+    position:sticky; left:0; border-right:1px solid var(--line);
+  }
+  .heat-cell{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:11.5px;
+    font-weight:500;
+    color:#2a1200;
+    min-width:78px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .heat-cell[data-v]:hover{ transform:scale(1.06); box-shadow:0 0 0 2px var(--ink) inset; z-index:2; position:relative; }
+  .heat-cell.cell-selected{ box-shadow:0 0 0 3px var(--maroon-deep) inset; transform:scale(1.06); z-index:3; position:relative; }
+  .heat-cell:empty{background:var(--paper-deep); cursor:default;}
+  td.hm-row-label{transition:color .15s ease;}
+  td.hm-row-label.hm-active{ color:var(--maroon) !important; font-weight:700; }
+  th.hm-active{ color:var(--maroon) !important; font-weight:700; }
+  .heat-readout{
+    font-family:var(--font-mono); font-size:13px; color:var(--ink-soft);
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--maroon);
+    border-radius:4px; padding:12px 16px; margin-bottom:14px; min-height:20px;
+  }
+  .heat-readout .hr-hint{color:var(--ink-faint);}
+  .heat-readout .hr-behavior{color:var(--maroon); font-weight:700;}
+  .heat-readout .hr-value{color:var(--maroon-deep); font-weight:700;}
+  .heat-legend{display:flex; align-items:center; gap:10px; margin-top:14px; font-size:11px; color:var(--ink-faint); font-family:var(--font-mono);}
+  .heat-legend-bar{
+    width:160px; height:10px; border-radius:2px;
+    background:linear-gradient(90deg,#FCE94F,#F2A93E,#D45C6B,#8E2A7A,#3A1560);
+  }
+  .heat-legend-labels{display:flex; gap:26px;}
+
+  .age-chart-block{max-width:680px;}
+  .age-svg{width:100%; height:auto; display:block;}
+
+  /* ---------- Tables ---------- */
+  .table-wrap{overflow-x:auto; margin:20px 0 30px; border:1px solid var(--line); border-radius:6px;}
+  table{border-collapse:collapse; width:100%; min-width:560px; background:var(--panel);}
+  th,td{text-align:left; padding:10px 14px; font-size:13px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); background:var(--paper-deep); position:sticky; top:0;}
+  tr:last-child td{border-bottom:none;}
+  td.num-cell{font-family:var(--font-mono); color:var(--maroon-deep); white-space:nowrap;}
+
+  details.table-toggle{margin:18px 0 30px; border:1px solid var(--line); border-radius:6px; background:var(--panel); overflow:hidden;}
+  details.table-toggle summary{
+    cursor:pointer; padding:14px 18px; font-family:var(--font-mono); font-size:12.5px;
+    color:var(--maroon); list-style:none; display:flex; align-items:center; justify-content:space-between;
+  }
+  details.table-toggle summary::-webkit-details-marker{display:none;}
+  details.table-toggle summary::after{content:"+"; font-size:16px; color:var(--ink-faint);}
+  details.table-toggle[open] summary::after{content:"–";}
+  details.table-toggle .table-wrap{margin:0; border:none; border-top:1px solid var(--line); border-radius:0;}
+
+  /* ---------- Two-column cards ---------- */
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin:22px 0;}
+  @media (max-width:760px){ .grid-2{grid-template-columns:1fr;} }
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:22px 24px;}
+  .card h4{font-family:var(--font-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--gold); margin:0 0 14px;}
+  .card ul{margin:0; padding-left:18px;}
+  .card li{font-size:14px; color:var(--ink-soft); margin-bottom:9px;}
+  .card li strong{color:var(--ink);}
+
+  .topic-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:20px 0;}
+  @media (max-width:760px){ .topic-grid{grid-template-columns:1fr;} }
+  .topic-card{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:20px 22px; position:relative;}
+  .topic-card .tnum{font-family:var(--font-mono); font-size:11px; color:var(--maroon); letter-spacing:.08em;}
+  .topic-card h4{font-family:var(--font-display); font-size:17px; font-style:italic; color:var(--maroon-deep); margin:6px 0 10px; font-weight:600;}
+  .topic-card p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+
+  /* ---------- Sample chip stats ---------- */
+  .chip-row{display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 28px;}
+  .chip{background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:8px 16px; font-size:12.5px; color:var(--ink-soft);}
+  .chip b{color:var(--maroon-deep); font-family:var(--font-mono);}
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:50px 0 60px;
+    border-top:1px solid var(--line);
+    margin-top:10px;
+  }
+  .cite-box{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:6px;
+    padding:24px 26px;
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    line-height:1.7;
+    max-width:78ch;
+  }
+  .cite-box .cb-label{color:var(--gold); letter-spacing:.08em; text-transform:uppercase; font-size:10.5px; display:block; margin-bottom:10px;}
+  footer .foot-links{margin-top:22px; font-size:13px; color:var(--ink-faint);}
+
+  /* ---------- Mobile top nav ---------- */
+  .mobile-nav{
+    display:none;
+    position:sticky; top:0; z-index:20;
+    background:var(--paper); border-bottom:1px solid var(--line);
+    padding:12px 20px;
+  }
+  @media (max-width:920px){ .mobile-nav{display:block;} }
+  .mobile-nav select{
+    width:100%; font-family:var(--font-mono); font-size:12.5px; padding:10px;
+    border:1px solid var(--line); border-radius:4px; background:var(--panel); color:var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .bar-fill{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="mobile-nav">
+  <select id="mobileJump" aria-label="Jump to section">
+    <option value="#top">Overview</option>
+    <option value="#abstract">Abstract</option>
+    <option value="#intro">Introduction</option>
+    <option value="#literature">Literature review</option>
+    <option value="#methods">Case study &amp; methods</option>
+    <option value="#results">Results</option>
+    <option value="#discussion">Discussion</option>
+    <option value="#limitations">Limitations</option>
+    <option value="#conclusion">Conclusion</option>
+  </select>
+</div>
+
+<div class="shell">
+
+  <aside class="rail">
+    <div class="rail-brand">Line 1 — Cairo Study<strong>GBV / Transit</strong></div>
+    <nav class="line-map" id="lineMap">
+      <a class="stop" href="#top"><span class="code">TERMINUS</span>Overview</a>
+      <a class="stop" href="#abstract"><span class="code">01</span>Abstract</a>
+      <a class="stop" href="#intro"><span class="code">02</span>Introduction</a>
+      <a class="stop" href="#literature"><span class="code">03</span>Literature review</a>
+      <a class="stop" href="#methods"><span class="code">04</span>Case study &amp; methods</a>
+      <a class="stop" href="#results"><span class="code">05</span>Results</a>
+      <a class="stop" href="#discussion"><span class="code">06</span>Discussion</a>
+      <a class="stop" href="#limitations"><span class="code">07</span>Limitations</a>
+      <a class="stop" href="#conclusion"><span class="code">08</span>Conclusion</a>
+    </nav>
+  </aside>
+
+  <main id="top">
+
+    <div class="hero">
+      <h1 class="title">An elephant in the bus:<br><em>violence against women</em></h1>
+      <p class="authors">Mohamed Abouelela · Christelle Al Haddad · Constantinos Antoniou</p>
+      <p class="affiliation">Chair of Transportation System Engineering, Technical University of Munich, Munich, Germany</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://www.sciencedirect.com/science/article/pii/S0967070X26002684" target="_blank" rel="noopener">Read the published article ↗</a>
+      </div>
+    </div>
+
+    <div class="abstract" id="abstract">
+      <h2>Abstract</h2>
+      <p>Gender-based violence (GBV) on public transport is a daily reality for many women and often goes unreported, which further worsens its impact on women's mobility and well-being. Using survey data from Cairo, Egypt, this study reveals that safety and security concerns are the most significant barriers to women's use of public transport. In the context of limited affordable alternatives, many women are forced to continue using unsafe public transit despite the risks, resulting in severe consequences for the affected women, including inaccessibility and social exclusion, financial stress, and psychological trauma. GBV in transit leads to lost opportunities, reduced participation in activities, and entrenched exclusion. Open-ended responses from participants underscore how structural and cultural norms shape these experiences; prevalent social perceptions and unclear legal definitions of harassment perpetuate under-reporting and impunity. Based on the findings, we recommend a bottom-up prevention strategy that integrates technological, social, and institutional interventions.</p>
+      <div class="keywords">
+        <span class="kw">Gender-Based Violence</span>
+        <span class="kw">Public Transportation</span>
+        <span class="kw">Travel Behavior</span>
+        <span class="kw">Women</span>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><span class="num">95%</span><span class="label">of respondents had experienced harassment on public transport at least once</span></div>
+      <div class="stat"><span class="num">97.5%</span><span class="label">did not report their most severe incident to any authority</span></div>
+      <div class="stat"><span class="num">79%</span><span class="label">would likely take a longer route if it made them feel safer</span></div>
+      <div class="stat"><span class="num">42%</span><span class="label">of the most severe incidents reported involved physical acts</span></div>
+      <div class="stat"><span class="num">18</span><span class="label">average age of the victim at the time of her most severe incident</span></div>
+      <div class="stat"><span class="num">60%</span><span class="label">of women felt outrage afterward — the single most common emotional response</span></div>
+    </div>
+
+    <!-- ===================== INTRODUCTION ===================== -->
+    <section class="block" id="intro">
+      <div class="section-head">
+        <span class="eyebrow">02 · Setting off</span>
+        <h2 class="section-title">Introduction</h2>
+      </div>
+      <div class="prose">
+        <p>The inclusive city is one of the pillars of the UN Sustainable Development Goals: discrimination based on gender should be eradicated. But cities are not gender-neutral — gender significantly shapes the experience of moving around a city. Although women represent roughly half the world's population, they do not enjoy the same freedom of movement as men, which limits their participation in economic and social life.</p>
+        <p>Public transport (PT) is the backbone of sustainable urban mobility, yet it often fails to serve women equally. Safety is one of the main barriers: women feel less safe than men at nearly every stage of a PT trip — on board, and while waiting at the station — and that feeling of insecurity shapes short- and long-term travel decisions, from daily mode choice to where to live and work.</p>
+        <p>This insecurity is deeply linked to <strong>gender-based violence</strong>, particularly sexual harassment, which is the most common and visible form of violence encountered in transit settings. This study uses survey data from <strong>Cairo, Egypt</strong> — the largest metropolitan area in the MENA region, home to roughly 23 million people — to understand the dimensions of GBV in transit and how it shapes women's travel decisions, and to surface what women themselves propose to improve safety.</p>
+        <p class="pull">The MENA region is one of the least-studied areas for GBV in public transport in the current literature — despite violence against women in public spaces being widely observed and rarely discussed. That contradiction gives the paper its title.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Contributions</h4>
+          <ul>
+            <li>Map women's perception of safety on PT, and what would improve it</li>
+            <li>Benchmark reported GBV in Cairo against other world cities</li>
+            <li>Capture the full anatomy of an incident — time, place, conditions, response, aftermath, and the survivor's own proposed solution</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Why Cairo</h4>
+          <ul>
+            <li>~23.1 million residents in Greater Cairo (2025), projected to reach 28.5 million by 2035</li>
+            <li>One of the world's most congested cities; congestion cost an estimated <strong>US$8 billion</strong> in 2016</li>
+            <li>Home to Africa's oldest metro, alongside informal <em>paratransit</em> microbuses that carry over half of all PT trips</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== LITERATURE REVIEW ===================== -->
+    <section class="block" id="literature">
+      <div class="section-head">
+        <span class="eyebrow">03 · Background</span>
+        <h2 class="section-title">Literature review</h2>
+      </div>
+
+      <h3 class="sub-title">Gendered travel behavior</h3>
+      <div class="prose">
+        <p>Women's travel needs differ from men's, shaped by their disproportionate role as primary caregivers. Their trips are more complex — chaining home, work, childcare, and shopping together — rather than the direct commute more typical of men. Across cities as different as Auckland, Dublin, Hanoi, Helsinki, and Manila, women make shorter trips, avoid peak-hour and nighttime travel, and have less access to private cars — a constraint observed in both developing contexts (India, China) and wealthy ones (the US, Germany, Sweden, Finland).</p>
+        <p>Yet women are not a homogeneous group. Low-income women in Dhaka face a distinct mix of infrastructural gaps and conservative social taboos; young ethnic-minority women in Auckland navigate "stranger danger" by pre-planning night trips and performing confidence; riders wearing visible religious dress report heightened discrimination. Treating "women" as a single vulnerable category obscures these intersecting burdens.</p>
+      </div>
+
+      <h3 class="sub-title">Gender-based violence in public transport</h3>
+      <div class="prose">
+        <p>GBV is any act of violence against someone because of their gender — physical, sexual, psychological, economic, or emotional. On transit, it ranges across a continuum, from sexist jokes and staring to groping and, in rare but real cases, assault. Researchers typically group harassment acts into three families:</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Nonverbal</h4>
+          <ul><li>Staring / leering</li><li>Suggestive facial expressions</li><li>Exposure or public masturbation</li></ul>
+        </div>
+        <div class="card">
+          <h4>Verbal</h4>
+          <ul><li>Catcalling, sexual comments</li><li>Offensive language</li><li>Threats or sexual invitations</li></ul>
+        </div>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <h4>Physical</h4>
+        <ul><li>Blocking the way</li><li>Invasion of privacy</li><li>Groping, touching, rubbing</li></ul>
+      </div>
+
+      <div class="prose" style="margin-top:26px;">
+        <p>The pattern repeats worldwide, at different intensities: up to 97% of women in São Paulo report harassment; rates sit between 50–80% in Mexico City, Bogotá, and Santiago; 78% in Karachi and over 85% in Nairobi. Most women respond by staying quiet or walking away rather than confronting the harasser — and the incidents are massively under-reported everywhere, from 32% saying nothing in London to 93% not reporting at all in Manizales, Colombia.</p>
+      </div>
+
+      <h3 class="sub-title">How Cairo compares to other cities</h3>
+      <div class="prose"><p>The table below distills 18 studies from around the world — the same one this paper builds on to show that Cairo's numbers, while stark, are not an outlier.</p></div>
+
+      <details class="table-toggle">
+        <summary>Open comparison table — 18 cities, harassment on public transport</summary>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ref.</th><th>Location</th><th>Overall stats.</th><th>Sample (N)</th><th>Reported</th></tr></thead>
+            <tbody>
+              <tr><td>[1]</td><td>London, UK</td><td class="num-cell">Avg. 10%; 20% for ages 16–34</td><td>4,527</td><td class="num-cell">68%</td></tr>
+              <tr><td>[2]</td><td>São Paulo, Brazil</td><td class="num-cell">97% harassed while traveling</td><td>—</td><td>—</td></tr>
+              <tr><td>[3]</td><td>France</td><td class="num-cell">39% reported harassment on PT</td><td>2,975</td><td class="num-cell">5% used alarm</td></tr>
+              <tr><td>[5]</td><td>Chennai, India</td><td class="num-cell">35% harassed in prior 6 months</td><td>530</td><td>—</td></tr>
+              <tr><td>[6]</td><td><strong>Cairo, Egypt</strong></td><td class="num-cell">Over 80% harassed across trip stages</td><td>2,500</td><td>—</td></tr>
+              <tr><td>[7]</td><td>Baku / Karachi / Tbilisi</td><td class="num-cell">81% / 78% / 45% touched, followed, or stared at</td><td>200 / 230 / 200</td><td>—</td></tr>
+              <tr><td>[8]</td><td>Nairobi, Kenya</td><td class="num-cell">85% reported some form of harassment</td><td>2,400</td><td class="num-cell">8%</td></tr>
+              <tr><td>[9]</td><td>Dhaka, Bangladesh</td><td class="num-cell">96% experienced harassment</td><td>225</td><td>—</td></tr>
+              <tr><td>[10]</td><td>Dhaka / Rajshahi / Mymensingh</td><td class="num-cell">~60% faced an act of harassment</td><td>408 / 167 / 99</td><td>—</td></tr>
+              <tr><td>[11]</td><td>Asunción / Lima</td><td class="num-cell">6% / 30% victimized in past 12 months</td><td>659 / 619</td><td class="num-cell">&lt;20%</td></tr>
+              <tr><td>[12]</td><td>Bogotá, Colombia</td><td class="num-cell">84% faced sexual harassment</td><td>1,169</td><td>—</td></tr>
+              <tr><td>[13]</td><td>Johannesburg, South Africa</td><td class="num-cell">All participants reported exposure to violence</td><td>10 interviews</td><td>—</td></tr>
+              <tr><td>[14]</td><td>Manizales, Colombia</td><td class="num-cell">73.3% faced GBV</td><td>296</td><td class="num-cell">7%</td></tr>
+              <tr><td>[15]</td><td>Dar es Salaam, Tanzania</td><td class="num-cell">72% reported GBV incidence</td><td>31</td><td>—</td></tr>
+              <tr><td>[16]</td><td>Lucknow, India</td><td class="num-cell">100% witnessed or were victims</td><td>200</td><td>—</td></tr>
+              <tr><td>[17]</td><td>Santiago, Chile</td><td class="num-cell">57% faced at least one incident</td><td>386</td><td>—</td></tr>
+              <tr><td>[18]</td><td>Saltillo, Mexico</td><td class="num-cell">52% groped in the last 12 months</td><td>611</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <h3 class="sub-title">The gap this study fills</h3>
+      <div class="prose">
+        <p>Existing research is geographically skewed toward major cities outside the MENA region, and GBV in transit is usually studied in isolation from broader urban planning. No prior study brings together timing, perpetrator identity, victim response, emotional aftermath, <em>and</em> the survivor's own proposed fix in one unified framework — which is exactly the gap this paper sets out to close.</p>
+      </div>
+    </section>
+
+    <!-- ===================== METHODS ===================== -->
+    <section class="block" id="methods">
+      <div class="section-head">
+        <span class="eyebrow">04 · Fieldwork</span>
+        <h2 class="section-title">Case study, data and methods</h2>
+      </div>
+
+      <div class="prose">
+        <p><strong>Cairo</strong> is the capital of Egypt and the largest city in the MENA region — about 10.3 million residents within the city, 48% of them women, inside a wider metropolitan area of 23.1 million. Its transport system leans heavily on informal <em>paratransit</em>: privately-owned 14-seat microbuses that carry over half of all PT trips, alongside Africa's oldest metro system and a public bus fleet that is, per capita, among the smallest in the region.</p>
+        <p>The research team ran a five-part online survey (via LimeSurvey, in Arabic and English) from January to April 2021, distributed through Facebook, LinkedIn, and WhatsApp. Only women, 18 or older, residing in Cairo and using PT, were eligible.</p>
+      </div>
+
+      <div class="chip-row">
+        <span class="chip">Screening responses <b>1,535</b></span>
+        <span class="chip">Travel behavior <b>739</b></span>
+        <span class="chip">Barriers to PT use <b>491</b></span>
+        <span class="chip">General GBV questions <b>397</b></span>
+        <span class="chip">Most severe incident <b>310</b></span>
+        <span class="chip">Full survey, incl. demographics <b>227</b></span>
+      </div>
+
+      <div class="prose">
+        <p>Because the survey was long, attrition was high — but a dedicated attrition check found dropouts' early answers tracked closely with those who finished, so each section's respondents were analyzed as-is (the <em>Retained Sample</em>) rather than discarded. The final complete sample (N = 227) skews young — 78% are 18–24 and 88% single — and more educated than the general population (65% hold a bachelor's degree or higher), which the authors are transparent about as a limitation.</p>
+        <p>An open-ended question let respondents describe GBV in their own words. Those answers were clustered using <strong>Latent Dirichlet Allocation (LDA)</strong> topic modeling, tuned via coherence, log-likelihood, and perplexity checks to four topics.</p>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS ===================== -->
+    <section class="block" id="results">
+      <div class="section-head">
+        <span class="eyebrow">05 · Findings</span>
+        <h2 class="section-title">Results</h2>
+      </div>
+
+      <h3 class="sub-title">Who's riding, and why</h3>
+      <div class="prose">
+        <p>Respondents were regular riders — about 60% use PT at least twice a week. Most are <strong>captive riders</strong>: two-thirds cite "no other option" as their reason for using PT, rather than cost or convenience. Only about 1 in 5 owns a car.</p>
+      </div>
+
+      <h3 class="sub-title">What keeps women off public transport</h3>
+      <div class="prose">
+        <p>Of 11 possible barriers, safety at the station and safety on board ranked first and second — ahead of vehicle condition, transfers, and trip duration. Stations, often less crowded than the vehicle itself, felt <em>less</em> safe than being on board — a pattern also documented in the UK, Australia, Sweden, Italy, Japan, and France.</p>
+        <p>Trip purpose matters: mandatory trips like commuting or school were rarely canceled over safety concerns, but <strong>leisure and shopping trips were likely to be cancelled by nearly 60% of respondents</strong> — a quieter, cumulative form of exclusion from everyday life.</p>
+      </div>
+
+      <div class="chart">
+        <div class="chart-title">Willingness to take a longer, safer route</div>
+        <div class="bar-row"><span class="bar-label">Very likely</span><div class="bar-track"><div class="bar-fill" data-w="64"></div></div><span class="bar-val">64.0%</span></div>
+        <div class="bar-row"><span class="bar-label">Somewhat likely</span><div class="bar-track"><div class="bar-fill" data-w="15.1"></div></div><span class="bar-val">15.1%</span></div>
+        <div class="bar-row"><span class="bar-label">Neutral</span><div class="bar-track"><div class="bar-fill" data-w="5.5"></div></div><span class="bar-val">5.5%</span></div>
+        <div class="bar-row"><span class="bar-label">Somewhat unlikely</span><div class="bar-track"><div class="bar-fill" data-w="4.7"></div></div><span class="bar-val">4.7%</span></div>
+        <div class="bar-row"><span class="bar-label">Very unlikely</span><div class="bar-track"><div class="bar-fill" data-w="3.7"></div></div><span class="bar-val">3.7%</span></div>
+      </div>
+      <div class="note">Roughly half of those willing to detour would accept up to 30 extra minutes of travel time to feel safer — the transit equivalent of a congestion "time premium," paid for safety instead.</div>
+
+      <h3 class="sub-title">The shape of harassment</h3>
+      <div class="prose">
+        <p>Only 5% of respondents had never experienced harassment on PT. About 1 in 7 face it <strong>daily</strong>.</p>
+      </div>
+      <div class="chart">
+        <div class="chart-title">How often respondents experience harassment</div>
+        <div class="bar-row"><span class="bar-label">Daily</span><div class="bar-track"><div class="bar-fill" data-w="14.1"></div></div><span class="bar-val">14.1%</span></div>
+        <div class="bar-row"><span class="bar-label">2–3×/week</span><div class="bar-track"><div class="bar-fill" data-w="19.4"></div></div><span class="bar-val">19.4%</span></div>
+        <div class="bar-row"><span class="bar-label">2–3×/month</span><div class="bar-track"><div class="bar-fill" data-w="22.7"></div></div><span class="bar-val">22.7%</span></div>
+        <div class="bar-row"><span class="bar-label">Rarely</span><div class="bar-track"><div class="bar-fill" data-w="21.2"></div></div><span class="bar-val">21.2%</span></div>
+        <div class="bar-row"><span class="bar-label">Once</span><div class="bar-track"><div class="bar-fill" data-w="17.4"></div></div><span class="bar-val">17.4%</span></div>
+        <div class="bar-row"><span class="bar-label">Never</span><div class="bar-track"><div class="bar-fill" data-w="5.3"></div></div><span class="bar-val">5.3%</span></div>
+      </div>
+
+      <div class="prose">
+        <p>The five most common unwanted behaviors, each reported by at least half of respondents, were all verbal or nonverbal: <strong>staring, catcalling, sexual comments, suggestive facial expressions, and offensive language.</strong> Physical acts — blocking the way, invasion of privacy — were reported less often but still real. Most incidents cluster late at night and in the early morning (9pm–7am), when demand — and the presence of other passengers — is lowest.</p>
+        <p>Faced with these acts, women mostly did not confront the person responsible: across almost every behavior, <strong>not reacting or walking away are the two most common responses</strong>, together accounting for roughly two-thirds to three-quarters of answers. Verbal retaliation is the most common form of pushback — highest for the everyday, high-frequency acts like offensive language (32.2%) and catcalling (31.4%) — while asking a fellow passenger or the driver for help is rare almost everywhere. That's less a sign of passivity than a coping strategy shaped by fear, distrust of authorities, and a lack of visible support.</p>
+      </div>
+
+      <div class="chart heatmap-wrap">
+        <div class="chart-title">Reaction to each unwanted behavior (share of respondents, N = 397)</div>
+        <div class="heat-readout" id="heatReadout">
+          <span class="hr-hint">Tap or click any tile to see the pairing</span>
+        </div>
+        <div class="table-wrap heatmap-table-wrap">
+          <table class="heatmap" id="heatmapTable">
+            <thead>
+              <tr>
+                <th>Behavior</th>
+                <th data-col="Didn't react">Didn't react</th>
+                <th data-col="Walked away">Walked away</th>
+                <th data-col="Sought help">Sought help</th>
+                <th data-col="Complained to driver">Complained to driver</th>
+                <th data-col="Verbal retaliation">Verbal retaliation</th>
+                <th data-col="Physical retaliation">Physical retaliation</th>
+                <th data-col="Prefer not to answer">Prefer not to answer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="hm-row-label">Sexual assault</td><td class="heat-cell" data-v="15.3">15.3%</td><td class="heat-cell" data-v="29.8">29.8%</td><td class="heat-cell"></td><td class="heat-cell" data-v="3.1">3.1%</td><td class="heat-cell" data-v="19.8">19.8%</td><td class="heat-cell" data-v="16">16%</td><td class="heat-cell" data-v="16">16%</td></tr>
+              <tr><td class="hm-row-label">Sexual invitations</td><td class="heat-cell" data-v="25">25%</td><td class="heat-cell" data-v="48.4">48.4%</td><td class="heat-cell" data-v="1.6">1.6%</td><td class="heat-cell" data-v="1.1">1.1%</td><td class="heat-cell" data-v="18.1">18.1%</td><td class="heat-cell" data-v="2.1">2.1%</td><td class="heat-cell" data-v="3.7">3.7%</td></tr>
+              <tr><td class="hm-row-label">Threatening</td><td class="heat-cell" data-v="20">20%</td><td class="heat-cell" data-v="29.2">29.2%</td><td class="heat-cell" data-v="6.7">6.7%</td><td class="heat-cell" data-v="7.5">7.5%</td><td class="heat-cell" data-v="22.5">22.5%</td><td class="heat-cell" data-v="5.8">5.8%</td><td class="heat-cell" data-v="8.3">8.3%</td></tr>
+              <tr><td class="hm-row-label">Masturbation in public</td><td class="heat-cell" data-v="19.4">19.4%</td><td class="heat-cell" data-v="49.6">49.6%</td><td class="heat-cell" data-v="3.6">3.6%</td><td class="heat-cell" data-v="3.6">3.6%</td><td class="heat-cell" data-v="10.8">10.8%</td><td class="heat-cell" data-v="2.9">2.9%</td><td class="heat-cell" data-v="10.1">10.1%</td></tr>
+              <tr><td class="hm-row-label">Exposing body parts</td><td class="heat-cell" data-v="20.5">20.5%</td><td class="heat-cell" data-v="49.1">49.1%</td><td class="heat-cell" data-v="4.3">4.3%</td><td class="heat-cell" data-v="2.5">2.5%</td><td class="heat-cell" data-v="8.7">8.7%</td><td class="heat-cell" data-v="6.2">6.2%</td><td class="heat-cell" data-v="8.7">8.7%</td></tr>
+              <tr><td class="hm-row-label">Rubbing</td><td class="heat-cell" data-v="17.5">17.5%</td><td class="heat-cell" data-v="39.5">39.5%</td><td class="heat-cell" data-v="3.5">3.5%</td><td class="heat-cell" data-v="2.5">2.5%</td><td class="heat-cell" data-v="20.5">20.5%</td><td class="heat-cell" data-v="10">10%</td><td class="heat-cell" data-v="6.5">6.5%</td></tr>
+              <tr><td class="hm-row-label">Inappropriate touching / groping</td><td class="heat-cell" data-v="10.4">10.4%</td><td class="heat-cell" data-v="36">36%</td><td class="heat-cell" data-v="4">4%</td><td class="heat-cell" data-v="1.6">1.6%</td><td class="heat-cell" data-v="22.8">22.8%</td><td class="heat-cell" data-v="16.8">16.8%</td><td class="heat-cell" data-v="8.4">8.4%</td></tr>
+              <tr><td class="hm-row-label">Invasion of privacy</td><td class="heat-cell" data-v="11.7">11.7%</td><td class="heat-cell" data-v="40.9">40.9%</td><td class="heat-cell" data-v="3.1">3.1%</td><td class="heat-cell" data-v="1.6">1.6%</td><td class="heat-cell" data-v="25.3">25.3%</td><td class="heat-cell" data-v="11.7">11.7%</td><td class="heat-cell" data-v="5.8">5.8%</td></tr>
+              <tr><td class="hm-row-label">Making sexually suggestive visuals</td><td class="heat-cell" data-v="34">34%</td><td class="heat-cell" data-v="36.7">36.7%</td><td class="heat-cell" data-v="2">2%</td><td class="heat-cell" data-v="3.3">3.3%</td><td class="heat-cell" data-v="15.3">15.3%</td><td class="heat-cell" data-v="1.3">1.3%</td><td class="heat-cell" data-v="7.3">7.3%</td></tr>
+              <tr><td class="hm-row-label">Blocking the way</td><td class="heat-cell" data-v="18">18%</td><td class="heat-cell" data-v="42.5">42.5%</td><td class="heat-cell" data-v="2.3">2.3%</td><td class="heat-cell" data-v="2.6">2.6%</td><td class="heat-cell" data-v="23.3">23.3%</td><td class="heat-cell" data-v="8.3">8.3%</td><td class="heat-cell" data-v="3">3%</td></tr>
+              <tr><td class="hm-row-label">Sexual comments</td><td class="heat-cell" data-v="33.9">33.9%</td><td class="heat-cell" data-v="31.8">31.8%</td><td class="heat-cell" data-v="0.3">0.3%</td><td class="heat-cell" data-v="3.1">3.1%</td><td class="heat-cell" data-v="25.6">25.6%</td><td class="heat-cell" data-v="1">1%</td><td class="heat-cell" data-v="4.2">4.2%</td></tr>
+              <tr><td class="hm-row-label">Offensive language</td><td class="heat-cell" data-v="31.9">31.9%</td><td class="heat-cell" data-v="28.3">28.3%</td><td class="heat-cell" data-v="0.7">0.7%</td><td class="heat-cell" data-v="2.3">2.3%</td><td class="heat-cell" data-v="32.2">32.2%</td><td class="heat-cell" data-v="1.3">1.3%</td><td class="heat-cell" data-v="3.3">3.3%</td></tr>
+              <tr><td class="hm-row-label">Catcalling</td><td class="heat-cell" data-v="33.7">33.7%</td><td class="heat-cell" data-v="30.7">30.7%</td><td class="heat-cell" data-v="0.3">0.3%</td><td class="heat-cell" data-v="0.6">0.6%</td><td class="heat-cell" data-v="31.4">31.4%</td><td class="heat-cell" data-v="1">1%</td><td class="heat-cell" data-v="2.3">2.3%</td></tr>
+              <tr><td class="hm-row-label">Making facial expressions (winking)</td><td class="heat-cell" data-v="43.3">43.3%</td><td class="heat-cell" data-v="32.8">32.8%</td><td class="heat-cell" data-v="0.3">0.3%</td><td class="heat-cell" data-v="1.3">1.3%</td><td class="heat-cell" data-v="18.8">18.8%</td><td class="heat-cell" data-v="1.6">1.6%</td><td class="heat-cell" data-v="1.9">1.9%</td></tr>
+              <tr><td class="hm-row-label">Staring / leering</td><td class="heat-cell" data-v="44">44%</td><td class="heat-cell" data-v="34.8">34.8%</td><td class="heat-cell"></td><td class="heat-cell" data-v="1.1">1.1%</td><td class="heat-cell" data-v="16.7">16.7%</td><td class="heat-cell" data-v="1.7">1.7%</td><td class="heat-cell" data-v="1.7">1.7%</td></tr>
+              <tr><td class="hm-row-label">Stalking or following</td><td class="heat-cell" data-v="15.7">15.7%</td><td class="heat-cell" data-v="58">58%</td><td class="heat-cell" data-v="2.7">2.7%</td><td class="heat-cell" data-v="2.7">2.7%</td><td class="heat-cell" data-v="15.7">15.7%</td><td class="heat-cell" data-v="2">2%</td><td class="heat-cell" data-v="3.1">3.1%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="heat-legend">
+          <span>Share of responses</span>
+          <div class="heat-legend-bar"></div>
+          <span class="heat-legend-labels"><em>0%</em><em>20%</em><em>40%</em><em>60%</em></span>
+        </div>
+      </div>
+
+      <h3 class="sub-title">The most severe incident</h3>
+      <div class="prose">
+        <p>Asked to describe their single worst experience, <strong>42% of respondents pointed to a physical act</strong>, 35% to nonverbal harassment, and 14% to verbal abuse — a reversal from day-to-day harassment, where verbal and nonverbal acts dominate. Most incidents (71%) happened in an averagely crowded setting, and in 16% of cases the harasser was a transit worker — a driver or conductor — rather than a fellow passenger.</p>
+      </div>
+
+      <div class="pull">97.5% of women who experienced their most severe incident did not report it to any authority.</div>
+
+      <div class="prose">
+        <p>The reasons cluster into three layers: <strong>practical</strong> (the incident was over too fast to act, or there was no witness), <strong>psychological</strong> (fear of not being believed, shock, fear of being blamed), and <strong>systemic</strong> (distrust that authorities would investigate, no clear way to report, weak legal protection).</p>
+      </div>
+
+      <details class="table-toggle">
+        <summary>Open full table — 20 reasons for not reporting</summary>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reason</th><th>Total sample</th><th>Retained sample</th><th>Full sample</th></tr></thead>
+            <tbody>
+              <tr><td>The incident was very quick</td><td class="num-cell">44.2%</td><td class="num-cell">38.6%</td><td class="num-cell">46.5%</td></tr>
+              <tr><td>I didn't think I would be taken seriously</td><td class="num-cell">40.3%</td><td class="num-cell">34.9%</td><td class="num-cell">42.5%</td></tr>
+              <tr><td>I do not trust the authorities to investigate</td><td class="num-cell">35.7%</td><td class="num-cell">20.5%</td><td class="num-cell">42.0%</td></tr>
+              <tr><td>Lack of information</td><td class="num-cell">30.4%</td><td class="num-cell">19.3%</td><td class="num-cell">35.0%</td></tr>
+              <tr><td>I was in shock</td><td class="num-cell">28.6%</td><td class="num-cell">32.5%</td><td class="num-cell">27.0%</td></tr>
+              <tr><td>I didn't think anyone would listen</td><td class="num-cell">25.4%</td><td class="num-cell">18.1%</td><td class="num-cell">28.5%</td></tr>
+              <tr><td>Lack of witness</td><td class="num-cell">24.7%</td><td class="num-cell">19.3%</td><td class="num-cell">27.0%</td></tr>
+              <tr><td>Fear of victim-shaming</td><td class="num-cell">23.0%</td><td class="num-cell">18.1%</td><td class="num-cell">25.0%</td></tr>
+              <tr><td>Not fully aware of my rights and the laws</td><td class="num-cell">21.2%</td><td class="num-cell">12.0%</td><td class="num-cell">25.0%</td></tr>
+              <tr><td>Laws are weak against sexual harassment</td><td class="num-cell">19.1%</td><td class="num-cell">13.3%</td><td class="num-cell">21.5%</td></tr>
+              <tr><td>Feelings of hopelessness / helplessness</td><td class="num-cell">18.7%</td><td class="num-cell">15.7%</td><td class="num-cell">20.0%</td></tr>
+              <tr><td>Lack of helpline number</td><td class="num-cell">18.7%</td><td class="num-cell">8.4%</td><td class="num-cell">23.0%</td></tr>
+              <tr><td>Embarrassment</td><td class="num-cell">16.6%</td><td class="num-cell">9.6%</td><td class="num-cell">19.5%</td></tr>
+              <tr><td>I was in a hurry</td><td class="num-cell">16.6%</td><td class="num-cell">14.5%</td><td class="num-cell">17.5%</td></tr>
+              <tr><td>Fear for my social image</td><td class="num-cell">14.8%</td><td class="num-cell">14.5%</td><td class="num-cell">15.0%</td></tr>
+              <tr><td>Fear of disapproval from others</td><td class="num-cell">13.8%</td><td class="num-cell">10.8%</td><td class="num-cell">15.0%</td></tr>
+              <tr><td>Afraid of harasser retaliation</td><td class="num-cell">13.4%</td><td class="num-cell">14.5%</td><td class="num-cell">13.0%</td></tr>
+              <tr><td>The reporting process is long</td><td class="num-cell">13.4%</td><td class="num-cell">7.2%</td><td class="num-cell">16.0%</td></tr>
+              <tr><td>Lack of emergency tools</td><td class="num-cell">13.1%</td><td class="num-cell">6.0%</td><td class="num-cell">16.0%</td></tr>
+              <tr><td>History of sexual violation (traumatized)</td><td class="num-cell">5.7%</td><td class="num-cell">4.8%</td><td class="num-cell">6.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <h3 class="sub-title">Who is affected, and how it feels afterward</h3>
+      <div class="prose">
+        <p>The most severe incidents skew strikingly young: the <strong>average age at the time of the incident was 18</strong>, with the distribution concentrated in the teens and early twenties and a long tail stretching out to women in their thirties — meaning many of these "most severe" experiences happened while respondents were still girls, not adult women.</p>
+      </div>
+
+      <div class="chart age-chart-block">
+        <div class="chart-title">Age at the time of the most severe incident (N = 310)</div>
+        <svg viewBox="0 0 640 220" class="age-svg" role="img" aria-label="Density curve of victim age at time of incident, peaking sharply around age 18 and tapering off toward age 35">
+          <line x1="40" y1="180" x2="620" y2="180" stroke="var(--line)" stroke-width="1"/>
+          <path d="M40,180 C 70,178 95,168 115,140 C 135,105 150,55 168,40 C 186,26 198,30 212,45 C 230,65 245,95 265,125 C 290,155 320,170 360,176 C 410,180 470,180 540,180 C 570,180 600,180 620,180"
+                fill="url(#ageGrad)" stroke="var(--maroon)" stroke-width="2.5" opacity="0.92"/>
+          <defs>
+            <linearGradient id="ageGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="var(--maroon)" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="var(--maroon)" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+          <line x1="176" y1="34" x2="176" y2="180" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="176" y="24" text-anchor="middle" font-family="IBM Plex Mono" font-size="12" fill="var(--maroon-deep)">avg. age 18</text>
+          <text x="40" y="200" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">5</text>
+          <text x="176" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">15</text>
+          <text x="330" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">20</text>
+          <text x="475" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">28</text>
+          <text x="612" y="200" text-anchor="end" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">35</text>
+        </svg>
+        <div class="note" style="margin-top:2px;">Illustrative rendering of the reported empirical density (peak concentration in the late teens, average age 18) — not a pixel reproduction of the original plot.</div>
+      </div>
+
+      <div class="prose">
+        <p>Asked how the most severe incident made them feel, respondents could select multiple emotions at once — and the top responses were unambiguous. <strong>Outrage (59.8%) and terror (55%)</strong> led, followed closely by confusion (45.4%) and feeling abused (43.6%). Fewer respondents described dissociation or minimization, suggesting most women recognized these incidents as serious violations in the moment, rather than downplaying them internally — even as nearly all stayed silent about it afterward.</p>
+      </div>
+
+      <div class="chart">
+        <div class="chart-title">Feelings after the most severe incident (N = 310, multiple selections allowed)</div>
+        <div class="bar-row"><span class="bar-label">Outrage</span><div class="bar-track"><div class="bar-fill" data-w="59.8"></div></div><span class="bar-val">59.8%</span></div>
+        <div class="bar-row"><span class="bar-label">Terror</span><div class="bar-track"><div class="bar-fill" data-w="55"></div></div><span class="bar-val">55.0%</span></div>
+        <div class="bar-row"><span class="bar-label">Confusion</span><div class="bar-track"><div class="bar-fill" data-w="45.4"></div></div><span class="bar-val">45.4%</span></div>
+        <div class="bar-row"><span class="bar-label">Abused</span><div class="bar-track"><div class="bar-fill" data-w="43.6"></div></div><span class="bar-val">43.6%</span></div>
+        <div class="bar-row"><span class="bar-label">Hopelessness</span><div class="bar-track"><div class="bar-fill" data-w="31.8"></div></div><span class="bar-val">31.8%</span></div>
+        <div class="bar-row"><span class="bar-label">Denial</span><div class="bar-track"><div class="bar-fill" data-w="27.8"></div></div><span class="bar-val">27.8%</span></div>
+        <div class="bar-row"><span class="bar-label">Overwhelmed</span><div class="bar-track"><div class="bar-fill" data-w="26.1"></div></div><span class="bar-val">26.1%</span></div>
+        <div class="bar-row"><span class="bar-label">Low self-esteem</span><div class="bar-track"><div class="bar-fill" data-w="15.1"></div></div><span class="bar-val">15.1%</span></div>
+        <div class="bar-row"><span class="bar-label">Sick</span><div class="bar-track"><div class="bar-fill" data-w="14.4"></div></div><span class="bar-val">14.4%</span></div>
+        <div class="bar-row"><span class="bar-label">Shame</span><div class="bar-track"><div class="bar-fill" data-w="10.3"></div></div><span class="bar-val">10.3%</span></div>
+        <div class="bar-row"><span class="bar-label">Minimization</span><div class="bar-track"><div class="bar-fill" data-w="6.9"></div></div><span class="bar-val">6.9%</span></div>
+        <div class="bar-row"><span class="bar-label">Dissociated</span><div class="bar-track"><div class="bar-fill" data-w="4.5"></div></div><span class="bar-val">4.5%</span></div>
+      </div>
+
+      <h3 class="sub-title">What women say would help</h3>
+      <div class="prose"><p>Given 12 possible interventions, support was high across the board — but visible, responsive infrastructure led the list.</p></div>
+      <div class="chart" style="max-width:680px;">
+        <div class="chart-title">Support for proposed interventions</div>
+        <div class="bar-row"><span class="bar-label">Emergency buttons</span><div class="bar-track"><div class="bar-fill" data-w="94.3"></div></div><span class="bar-val">94.3%</span></div>
+        <div class="bar-row"><span class="bar-label">Info campaigns</span><div class="bar-track"><div class="bar-fill" data-w="93.5"></div></div><span class="bar-val">93.5%</span></div>
+        <div class="bar-row"><span class="bar-label">Surveillance cameras</span><div class="bar-track"><div class="bar-fill" data-w="93.5"></div></div><span class="bar-val">93.5%</span></div>
+        <div class="bar-row"><span class="bar-label">Security at stations</span><div class="bar-track"><div class="bar-fill" data-w="90.9"></div></div><span class="bar-val">90.9%</span></div>
+        <div class="bar-row"><span class="bar-label">Improved lighting</span><div class="bar-track"><div class="bar-fill" data-w="86.5"></div></div><span class="bar-val">86.5%</span></div>
+        <div class="bar-row"><span class="bar-label">Emergency kiosks</span><div class="bar-track"><div class="bar-fill" data-w="85.7"></div></div><span class="bar-val">85.7%</span></div>
+        <div class="bar-row"><span class="bar-label">Onboard security</span><div class="bar-track"><div class="bar-fill" data-w="84.8"></div></div><span class="bar-val">84.8%</span></div>
+        <div class="bar-row"><span class="bar-label">Community awareness</span><div class="bar-track"><div class="bar-fill" data-w="82.2"></div></div><span class="bar-val">82.2%</span></div>
+        <div class="bar-row"><span class="bar-label">Female drivers</span><div class="bar-track"><div class="bar-fill" data-w="70.6"></div></div><span class="bar-val">70.6%</span></div>
+        <div class="bar-row"><span class="bar-label">Separate boarding entrances</span><div class="bar-track"><div class="bar-fill" data-w="67"></div></div><span class="bar-val">67.0%</span></div>
+        <div class="bar-row"><span class="bar-label">Female ticket inspectors</span><div class="bar-track"><div class="bar-fill" data-w="58.7"></div></div><span class="bar-val">58.7%</span></div>
+      </div>
+
+      <h3 class="sub-title">In their own words: four themes</h3>
+      <div class="prose"><p>An open-ended question let respondents describe GBV freely. Clustering the answers with topic modeling surfaced four recurring themes:</p></div>
+      <div class="topic-grid">
+        <div class="topic-card"><span class="tnum">TOPIC 01</span><h4>Social perceptions of GBV</h4><p>How violence — especially verbal, gendered violence — is understood and normalized, and how that needs to be actively challenged.</p></div>
+        <div class="topic-card"><span class="tnum">TOPIC 02</span><h4>Harassment in public spaces</h4><p>Fear and discomfort tied to specific places — the street, the station — pointing to an urgent need for safer public and transit environments.</p></div>
+        <div class="topic-card"><span class="tnum">TOPIC 03</span><h4>Types and descriptions of GBV</h4><p>Women clearly distinguish sexual from physical violence — evidence that legal clarity and trained enforcement would resonate.</p></div>
+        <div class="topic-card"><span class="tnum">TOPIC 04</span><h4>Structural &amp; individual dimensions</h4><p>Violence as both individual behavior and structural context — calling for institutional reform alongside community action.</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== DISCUSSION ===================== -->
+    <section class="block" id="discussion">
+      <div class="section-head">
+        <span class="eyebrow">06 · So what</span>
+        <h2 class="section-title">Discussion &amp; recommendations</h2>
+      </div>
+      <div class="prose">
+        <p>GBV on transit is a universal phenomenon with a strikingly consistent shape from Cairo to São Paulo to London: most women face it, most stay quiet, and most keep riding anyway because they have no real alternative. That combination — high exposure, low reporting, low exit options — is what turns a safety problem into a driver of social exclusion: women skip leisure and shopping trips, withdraw from public life, and absorb the cost in time, money, and mental health.</p>
+        <p>The authors frame their recommendations in two tiers — what can move quickly, and what has to be sustained over years.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>Immediate, low-infrastructure moves</h4>
+          <ul>
+            <li><strong>Technology:</strong> emergency buttons and surveillance cameras across the network</li>
+            <li><strong>Environment:</strong> well-lit corridors and visible, trained security on board and at stations</li>
+            <li><strong>Reporting:</strong> digital kiosks, panic apps, QR codes, helplines, anonymous platforms</li>
+            <li><strong>Enforcement:</strong> transparent, visibly-followed-through reporting processes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Sustained, structural change</h4>
+          <ul>
+            <li><strong>Awareness:</strong> nationwide campaigns built with local communities and survivor networks</li>
+            <li><strong>Inclusion:</strong> gender-sensitive hiring — more women drivers and controllers</li>
+            <li><strong>Training:</strong> trauma-informed, gender-sensitive training for transport staff, police, and courts</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>What travels across borders less well is the specific fix. Cairo respondents strongly favored surveillance cameras — a measure Australian riders view with skepticism. French riders lean toward personal tech, like smartphone alarms. Bangladeshi respondents pushed harder for systemic change: stricter enforcement, more vehicles, women-only carriages. <strong>The problem is universal; the right intervention is local.</strong></p>
+      </div>
+    </section>
+
+    <!-- ===================== LIMITATIONS ===================== -->
+    <section class="block" id="limitations">
+      <div class="section-head">
+        <span class="eyebrow">07 · In fairness</span>
+        <h2 class="section-title">Limitations</h2>
+      </div>
+      <div class="prose">
+        <p>The survey's length drove significant drop-off — but an attrition check found dropouts' early answers tracked the completers closely, so the final pattern of results is unlikely to be an artifact of who stuck around. The complete sample (N = 227) is modest and skews young and well-educated, in line with comparable studies elsewhere (Dhaka N = 225, Manizales N = 296, Lucknow N = 200). Because recruitment ran entirely online, older and less digitally-connected women are under-represented; face-to-face interviews were judged likely to introduce their own bias, given how private these incidents are. The analysis is intentionally descriptive rather than causal — appropriate for establishing a first baseline in a region this under-studied, but a clear invitation for future modeling work.</p>
+      </div>
+    </section>
+
+    <!-- ===================== CONCLUSION ===================== -->
+    <section class="block" id="conclusion">
+      <div class="section-head">
+        <span class="eyebrow">08 · Terminus</span>
+        <h2 class="section-title">Conclusion</h2>
+      </div>
+      <div class="prose">
+        <p>GBV on public transport is close to universal — nearly all women experience it, yet almost no one intervenes seriously to stop it. What stands out in this data is how <em>similar</em> the pattern looks whether the city is rich or poor, dense or sprawling: cities everywhere are still not designed around the needs of half their population.</p>
+        <p>That similarity is also the opportunity. A shared underlying pattern of need means a shared policy foundation is possible — one that treats safety and dignity as non-negotiable parts of public transport design, built from what women who actually ride the system say they need, rather than imposed from the top down.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="cite-box">
+        <span class="cb-label">Cite this article</span>
+        Abouelela, M., Al Haddad, C., &amp; Antoniou, C. (2026). <em>An elephant in the bus: Violence against women.</em> Transport Policy, 186, 104258.<br>
+        DOI: <a href="https://doi.org/10.1016/j.tranpol.2026.104258" target="_blank" rel="noopener" style="color:#E7D9B6;">doi.org/10.1016/j.tranpol.2026.104258</a><br>
+        Full text: <a href="https://www.sciencedirect.com/science/article/pii/S0967070X26002684" target="_blank" rel="noopener" style="color:#E7D9B6;">sciencedirect.com/science/article/pii/S0967070X26002684</a>
+      </div>
+      <div class="foot-links">This page is an interactive companion summarizing the manuscript's structure, figures, and tables. For the complete methodology, full reference list, and citable version of record, see the published article linked above.</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Color the behavior/reaction heatmap cells (plasma-style scale, 0–60%)
+  (function(){
+    const stops = [
+      {p:0.00, c:[252,233,79]},
+      {p:0.17, c:[242,169,62]},
+      {p:0.34, c:[212,92,107]},
+      {p:0.60, c:[142,42,122]},
+      {p:1.00, c:[58,21,96]}
+    ];
+    function lerp(a,b,t){ return a + (b-a)*t; }
+    function colorFor(value){
+      const t = Math.max(0, Math.min(1, value/60));
+      let lo = stops[0], hi = stops[stops.length-1];
+      for(let i=0;i<stops.length-1;i++){
+        if(t>=stops[i].p && t<=stops[i+1].p){ lo=stops[i]; hi=stops[i+1]; break; }
+      }
+      const span = (hi.p - lo.p) || 1;
+      const lt = (t - lo.p)/span;
+      const r = Math.round(lerp(lo.c[0], hi.c[0], lt));
+      const g = Math.round(lerp(lo.c[1], hi.c[1], lt));
+      const b = Math.round(lerp(lo.c[2], hi.c[2], lt));
+      return {rgb:`rgb(${r},${g},${b})`, dark: (r*0.299+g*0.587+b*0.114) < 140};
+    }
+    document.querySelectorAll('.heat-cell[data-v]').forEach(cell=>{
+      const v = parseFloat(cell.dataset.v);
+      if(isNaN(v)) return;
+      const {rgb, dark} = colorFor(v);
+      cell.style.background = rgb;
+      cell.style.color = dark ? '#F5F2EC' : '#2A1200';
+    });
+  })();
+
+  // Interactive heatmap: click a tile to highlight its behavior + reaction, and show the pairing
+  (function(){
+    const table = document.getElementById('heatmapTable');
+    const readout = document.getElementById('heatReadout');
+    if(!table || !readout) return;
+    const headerCells = Array.from(table.querySelectorAll('thead th'));
+
+    table.querySelectorAll('tbody .heat-cell[data-v]').forEach(cell=>{
+      cell.addEventListener('click', ()=>{
+        // clear previous state
+        table.querySelectorAll('.cell-selected').forEach(c=>c.classList.remove('cell-selected'));
+        table.querySelectorAll('.hm-active').forEach(c=>c.classList.remove('hm-active'));
+
+        // mark this tile
+        cell.classList.add('cell-selected');
+
+        // highlight the row label (behavior name) in red
+        const row = cell.closest('tr');
+        const rowLabel = row.querySelector('.hm-row-label');
+        if(rowLabel) rowLabel.classList.add('hm-active');
+
+        // highlight the matching column header
+        const colIndex = Array.from(row.children).indexOf(cell);
+        const colHeader = headerCells[colIndex];
+        if(colHeader) colHeader.classList.add('hm-active');
+
+        // update the readout line
+        const behavior = rowLabel ? rowLabel.textContent : '';
+        const reaction = colHeader ? colHeader.dataset.col : '';
+        const value = cell.dataset.v;
+        readout.innerHTML = `<span class="hr-behavior">${behavior}</span> → ${reaction}: <span class="hr-value">${value}%</span> of respondents`;
+      });
+    });
+  })();
+
+  // Animate bar charts on scroll into view
+  const bars = document.querySelectorAll('.bar-fill');
+  const barObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        el.style.width = el.dataset.w + '%';
+        barObserver.unobserve(el);
+      }
+    });
+  }, {threshold:0.3});
+  bars.forEach(b=>barObserver.observe(b));
+
+  // Active stop highlighting on the line map
+  const stops = document.querySelectorAll('.stop');
+  const sections = document.querySelectorAll('section.block, .hero');
+  const sectionObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = '#' + entry.target.id;
+        stops.forEach(s=>{
+          s.classList.toggle('active', s.getAttribute('href') === id);
+        });
+      }
+    });
+  }, {threshold:0, rootMargin:'-40% 0px -55% 0px'});
+  sections.forEach(s=>{ if(s.id) sectionObserver.observe(s); });
+
+  // Mobile dropdown nav
+  const mobileJump = document.getElementById('mobileJump');
+  if(mobileJump){
+    mobileJump.addEventListener('change', (e)=>{
+      const target = document.querySelector(e.target.value);
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    });
+  }
+</script>
+
+</body>
+</html>
